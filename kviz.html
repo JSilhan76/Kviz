@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Longelite – Produktový kvíz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #D8DBD3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
+  }
+
+  .lng-quiz {
+    --paper: #EEF0EA;
+    --ink: #1A2620;
+    --ink-soft: #4C5750;
+    --jade: #2F6B57;
+    --jade-bright: #4FA388;
+    --gold: #A9824A;
+    --line: #D6D9CF;
+    --card: #FBFBF7;
+    --shadow: 0 1px 2px rgba(26,38,32,.04), 0 8px 30px rgba(26,38,32,.06);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 740px;
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(20px, 4vw, 40px);
+    border-radius: 22px;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lng-quiz * { box-sizing: border-box; }
+
+  .lng-quiz::before {
+    content: "";
+    position: absolute;
+    top: -160px; right: -120px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(79,163,136,.22), transparent 68%);
+    filter: blur(8px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .lng-quiz > * { position: relative; z-index: 1; }
+
+  /* ─── Header ─── */
+  .lng-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: clamp(22px, 4vw, 34px);
+  }
+
+  .lng-brand {
+    font-family: 'Fraunces';
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--jade);
+  }
+
+  .lng-prog { flex: 1; display: flex; gap: 6px; }
+
+  .lng-seg {
+    height: 4px;
+    flex: 1;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .lng-seg i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--jade-bright);
+    border-radius: 99px;
+    transition: width .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .lng-seg.done i, .lng-seg.active i { width: 100%; }
+
+  .lng-count {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ─── Stage animation ─── */
+  .lng-stage { animation: lngIn .5s cubic-bezier(.22,1,.36,1) both; }
+
+  @keyframes lngIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── Question text ─── */
+  .lng-eyebrow {
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--jade);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .lng-q {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: clamp(24px, 4.4vw, 33px);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    letter-spacing: -.01em;
+  }
+
+  .lng-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+  }
+
+  /* ─── Options grid ─── */
+  .lng-opts {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lng-opts.single-col { grid-template-columns: 1fr; }
+
+  @media (max-width: 480px) {
+    .lng-opts { grid-template-columns: 1fr; }
+  }
+
+  .lng-opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 15px 16px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color .18s, background .18s, transform .12s;
+  }
+
+  .lng-opt:hover {
+    border-color: var(--jade-bright);
+    transform: translateY(-1px);
+  }
+
+  .lng-opt:focus-visible {
+    outline: 2px solid var(--jade);
+    outline-offset: 2px;
+  }
+
+  /* Radio indicator (single-select) */
+  .lng-opt .dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s;
+  }
+
+  .lng-opt .dot::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--jade);
+    transform: scale(0);
+    transition: transform .18s;
+  }
+
+  /* Checkbox indicator (multi-select) */
+  .lng-opt .check {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s, background .18s;
+  }
+
+  .lng-opt .check::after {
+    content: "";
+    width: 11px; height: 7px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0) translateY(-1px);
+    transition: transform .18s;
+  }
+
+  /* Selected states */
+  .lng-opt.sel {
+    border-color: var(--jade);
+    background: #F1F6F2;
+  }
+
+  .lng-opt.sel .dot { border-color: var(--jade); }
+  .lng-opt.sel .dot::after { transform: scale(1); }
+
+  .lng-opt.sel .check {
+    border-color: var(--jade);
+    background: var(--jade);
+  }
+
+  .lng-opt.sel .check::after {
+    transform: rotate(-45deg) scale(1) translateY(-1px);
+  }
+
+  .lng-opt .emoji { font-size: 19px; line-height: 1; }
+
+  /* ─── Navigation ─── */
+  .lng-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 26px;
+    gap: 12px;
+  }
+
+  .lng-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 99px;
+    padding: 13px 26px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity .18s, transform .12s, background .18s;
+  }
+
+  .lng-btn:active { transform: translateY(1px); }
+
+  .lng-btn--primary { background: var(--jade); color: #fff; }
+  .lng-btn--primary:hover { background: #27574a; }
+  .lng-btn--primary:disabled { opacity: .35; cursor: not-allowed; }
+
+  .lng-btn--ghost {
+    background: transparent;
+    color: var(--ink-soft);
+    padding: 13px 8px;
+  }
+
+  .lng-btn--ghost:hover { color: var(--ink); }
+
+  /* ─── Results ─── */
+  .lng-result-head { text-align: center; margin-bottom: 26px; }
+  .lng-result-head .lng-q { margin-bottom: 8px; }
+
+  .lng-cards { display: flex; flex-direction: column; gap: 14px; }
+
+  .lng-card {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .lng-card--top {
+    border-color: var(--jade);
+    box-shadow: 0 10px 34px rgba(47,107,87,.14);
+  }
+
+  .lng-card--2nd { border-color: #b5c4bc; }
+
+  .lng-thumb {
+    width: 78px; height: 78px;
+    flex: none;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #E3E7DD;
+  }
+
+  .lng-card-body { flex: 1; min-width: 0; }
+
+  .lng-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+
+  .lng-pname {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 3px;
+    line-height: 1.2;
+  }
+
+  .lng-reason {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+    line-height: 1.45;
+  }
+
+  .lng-buyrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .lng-price { font-weight: 600; font-size: 15px; }
+
+  .lng-buy {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--jade);
+    padding: 9px 20px;
+    border-radius: 99px;
+    transition: background .18s;
+  }
+
+  .lng-buy:hover { background: #27574a; }
+
+  .lng-card--top .lng-buy { background: var(--gold); }
+  .lng-card--top .lng-buy:hover { background: #8f6c3b; }
+
+  @media (max-width: 440px) {
+    .lng-card { flex-direction: column; align-items: flex-start; text-align: left; }
+    .lng-thumb { width: 100%; height: 120px; }
+  }
+
+  /* Section separator for secondary results */
+  .lng-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 20px 0 10px;
+  }
+
+  /* Bundle */
+  .lng-bundle {
+    margin-top: 22px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: linear-gradient(135deg, #23362F, #2F6B57);
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 20px;
+  }
+
+  .lng-bundle-body { flex: 1; min-width: 0; }
+  .lng-bundle .lng-badge { color: #E8C98A; margin-bottom: 4px; }
+
+  .lng-bundle h4 {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+
+  .lng-bundle p {
+    font-size: 13px;
+    margin: 0;
+    color: rgba(255,255,255,.82);
+    line-height: 1.45;
+  }
+
+  .lng-bundle a {
+    flex: none;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #23362F;
+    background: #fff;
+    padding: 11px 20px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  .lng-bundle a:hover { background: #EDEAE0; }
+
+  @media (max-width: 440px) {
+    .lng-bundle { flex-direction: column; align-items: flex-start; }
+  }
+
+  .lng-restart { display: block; margin: 24px auto 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lng-stage { animation: none; }
+    .lng-seg i { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lng-quiz" role="region" aria-label="Produktový kvíz Longelite">
+  <div class="lng-top">
+    <span class="lng-brand">Longelite</span>
+    <div class="lng-prog" id="lngProg" aria-hidden="true"></div>
+    <span class="lng-count" id="lngCount"></span>
+  </div>
+  <div id="lngApp"></div>
+</div>
+
+<script>
+(function () {
+
+  // ===== PRODUKTY =====
+  var PRODUCTS = [
+    { id: 'glycine', name: 'Pure Glycine', price: '598 Kč',
+      url: 'https://www.longelite.com/pure-glycine/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/48-4_pure-glycine.jpg?69a7eeba',
+      tags: ['spanek', 'regenerace', 'dlouhovekost', 'plet'],
+      reason: 'Čistý glycin pro hlubší spánek, regeneraci a tvorbu kolagenu – jednoduchý základ dlouhověkosti.' },
+
+    { id: 'magnesium', name: 'Magnesium Boost', price: '629 Kč',
+      url: 'https://www.longelite.com/magnesium-boost/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/63_magnesium-boost.jpg?69a7eced',
+      tags: ['spanek', 'stres', 'energie', 'regenerace'],
+      reason: 'Hořčík bisglycinát + B6 na uvolnění napětí, klidnější spánek a regeneraci nervů.' },
+
+    { id: 'fiber', name: 'Fiber Complex', price: '990 Kč',
+      url: 'https://www.longelite.com/fiber-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/86_vizu-20boza-20fiber-20complex-20web.png?6a020349',
+      tags: ['traveni', 'metabolismus'],
+      reason: 'Komplex prebiotické vlákniny pro klidné trávení, zdravý mikrobiom a delší pocit sytosti.' },
+
+    { id: 'cognitive', name: 'Cognitive Support', price: '1 089 Kč',
+      url: 'https://www.longelite.com/longelite-cognitive-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/77_cognitive-final2.png?6a00cc85',
+      tags: ['soustredeni', 'energie'],
+      reason: 'Pro lepší paměť, soustředění a mentální energii – výkon dnes i dlouhodobé zdraví mozku.' },
+
+    { id: 'glucose', name: 'Glucose Control', price: '1 089 Kč',
+      url: 'https://www.longelite.com/glucose-control/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/66-4_glucose-control.jpg?69a7ee89',
+      tags: ['metabolismus', 'energie'],
+      reason: 'Berberin, skořice a chrom pro stabilní krevní cukr, vyrovnanou energii a metabolické zdraví.' },
+
+    { id: 'matcha', name: 'Matcha Protein', price: '1 090 Kč', group: 'matcha',
+      url: 'https://www.longelite.com/matcha-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/92_vizu-20doypack-20matcha-20protein-20800g-20web.png?6a1421b9',
+      tags: ['regenerace', 'energie', 'soustredeni'],
+      reason: 'Syrovátkový protein s japonskou matchou – regenerace, svaly i jemné soustředění z L-theaninu.' },
+
+    { id: 'skin', name: 'Skin Protect & Repair', price: '1 150 Kč',
+      url: 'https://www.longelite.com/skin-protect-repair/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/57-4_skin-protect-repair.jpg?69a7eece',
+      tags: ['plet', 'dlouhovekost'],
+      reason: 'Astaxanthin a vitamin C chrání pleť před stárnutím a podporují tvorbu kolagenu zevnitř.' },
+
+    { id: 'sleep', name: 'Sleep Complex', price: '1 169 Kč',
+      url: 'https://www.longelite.com/sleep-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/54-4_sleep-complex.jpg?69a7f0f2',
+      tags: ['spanek', 'stres', 'regenerace'],
+      reason: 'Usneš rychleji, prospíš hlouběji a vstaneš odpočatá – bez návyku.' },
+
+    { id: 'matchacoco', name: 'Matcha–Coco Protein', price: '1 190 Kč', group: 'matcha',
+      url: 'https://www.longelite.com/matcha-coco-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/95_vizu-20doypack-20matcha-e2-80-93coco-20protein-20800g-20web.png?6a1462b8',
+      tags: ['regenerace', 'energie', 'soustredeni'],
+      reason: 'Krémová matcha-kokosová varianta proteinu pro regeneraci, svaly a soustředění.' },
+
+    { id: 'menopause', name: 'Menopause Support', price: '1 249 Kč',
+      url: 'https://www.longelite.com/menopause-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/80_menopause.png?6a00c066',
+      tags: ['menopauza', 'spanek', 'stres', 'dlouhovekost'],
+      reason: 'Bez hormonů zklidní návaly, podpoří spánek, náladu i zdraví kostí během menopauzy.' },
+
+    { id: 'postworkout', name: 'Post Workout Complex', price: '1 440 Kč', group: 'postworkout',
+      url: 'https://www.longelite.com/post-workout-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/60_vizu-20doypack-20post-20workout-20complex-201200-20g-20skorice-20web.png?6a01f9c2',
+      tags: ['regenerace', 'energie'],
+      reason: 'Protein, kreatin a kolagen pro maximální regeneraci a růst svalů (příchuť vyberete na produktu).' },
+
+    { id: 'postworkoutv', name: 'Post Workout Complex – vanilka', price: '1 490 Kč', group: 'postworkout',
+      url: 'https://www.longelite.com/post-workout-complex-vanilka/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/83_vizu-20doypack-20post-20workout-20complex-201200-20g-20vanilka-20web.png?6a01f664',
+      tags: ['regenerace', 'energie'],
+      reason: 'Protein, kreatin a kolagen pro regeneraci a růst svalů – příchuť vanilka.' },
+
+    { id: 'longevity', name: 'Longevity Essentials', price: '1 890 Kč',
+      url: 'https://www.longelite.com/longevity-essentials/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/51_longevity-essentials.jpg?69a7eca5',
+      tags: ['dlouhovekost', 'imunita', 'regenerace'],
+      reason: 'Komplexní základ dlouhověkosti – mitochondrie, imunita, cévy a regenerace v jednom.' },
+
+    { id: 'corestack', name: 'Longelite Core Stack', price: '5 990 Kč', group: 'corestack', isBundle: true,
+      url: 'https://www.longelite.com/longelite-core-stack-2/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/89_longelite-produktove-fotky-square-a-web.jpg?6a1414df',
+      tags: ['dlouhovekost'],
+      reason: 'Kompletní měsíční longevity protokol v jednom – spánek, energie, metabolismus i imunita, bez složitého kombinování.' }
+  ];
+
+  // ===== OTÁZKY =====
+  // type:'multi'  → více možností, checkbox styl, tlačítko Pokračovat vždy aktivní
+  // type:'single' → jedna možnost, radio styl, automaticky postoupí dál po kliknutí
+  var QUESTIONS = [
+    { type: 'multi', cols: 2, eyebrow: 'Otázka 1 ze 4',
+      q: 'Co chceš teď nejvíc řešit?',
+      sub: 'Vyber vše, co se tě týká – čím víc zadáš, tím přesnější doporučení dostaneš.',
+      opts: [
+        { e: '😴', label: 'Únava, nízká energie',    tag: 'energie' },
+        { e: '🌙', label: 'Špatný spánek',           tag: 'spanek' },
+        { e: '😰', label: 'Stres a nervozita',       tag: 'stres' },
+        { e: '🧠', label: 'Soustředění a paměť',    tag: 'soustredeni' },
+        { e: '🫧', label: 'Trávení a mikrobiom',     tag: 'traveni' },
+        { e: '🏋', label: 'Sport a regenerace',      tag: 'regenerace' },
+        { e: '✨', label: 'Pleť a stárnutí',         tag: 'plet' },
+        { e: '📊', label: 'Metabolismus, cukr',      tag: 'metabolismus' },
+        { e: '🌸', label: 'Menopauza',               tag: 'menopauza' },
+        { e: '🛡️', label: 'Imunita',                tag: 'imunita' }
+      ]
+    },
+
+    { type: 'multi', cols: 1, eyebrow: 'Otázka 2 ze 4',
+      q: 'Čeho chceš hlavně dosáhnout?',
+      sub: 'Vyber jeden nebo více cílů – doladí výslednou nabídku.',
+      opts: [
+        { e: '⚡', label: 'Mít víc energie a kondice',              tag: 'energie' },
+        { e: '🕊️', label: 'Víc klidu, pohody a lepší nálady',     tag: 'stres' },
+        { e: '😴', label: 'Líp spát a regenerovat',                tag: 'spanek' },
+        { e: '⏳', label: 'Dlouhověkost a prevence stárnutí',      tag: 'dlouhovekost' },
+        { e: '💪', label: 'Výkon a budování svalů',                tag: 'regenerace' }
+      ]
+    },
+
+    { type: 'multi', cols: 2, eyebrow: 'Otázka 3 ze 4',
+      q: 'Chceš podpořit ještě něco?',
+      sub: 'Přidej další oblasti – nebo žádnou a jdi dál.',
+      opts: [
+        { e: '🛡️', label: 'Imunita',       tag: 'imunita' },
+        { e: '✨', label: 'Pleť',            tag: 'plet' },
+        { e: '🫧', label: 'Trávení',        tag: 'traveni' },
+        { e: '🧠', label: 'Mozek a fokus', tag: 'soustredeni' },
+        { e: '📊', label: 'Metabolismus',   tag: 'metabolismus' },
+        { e: '🌙', label: 'Spánek',         tag: 'spanek' }
+      ]
+    },
+
+    { type: 'single', cols: 2, eyebrow: 'Otázka 4 ze 4',
+      q: 'V jaké jsi životní fázi?',
+      sub: 'Pomáhá nám zvážit prevenci a regeneraci.',
+      opts: [
+        { e: '🌱', label: 'Do 35 let',           tag: '' },
+        { e: '🌿', label: '35–50 let',           tag: 'dlouhovekost' },
+        { e: '🌳', label: '50+ let',             tag: 'dlouhovekost' },
+        { e: '🌸', label: 'Procházím menopauzou', tag: 'menopauza' }
+      ]
+    }
+  ];
+
+  // ===== STAV =====
+  var step = 0, answers = {}, total = QUESTIONS.length;
+  var app    = document.getElementById('lngApp');
+  var progEl = document.getElementById('lngProg');
+  var countEl = document.getElementById('lngCount');
+
+  for (var i = 0; i < total; i++) {
+    progEl.insertAdjacentHTML('beforeend', '<span class="lng-seg"><i></i></span>');
+  }
+  var segs = progEl.querySelectorAll('.lng-seg');
+
+  // ─── Progress bar ───
+  function updateProgress() {
+    segs.forEach(function (s, idx) {
+      s.classList.remove('active', 'done');
+      if (idx < step)          s.classList.add('done');
+      else if (idx === step && step < total) s.classList.add('active');
+    });
+    countEl.textContent = step < total ? (step + 1) + ' / ' + total : '';
+  }
+
+  // ─── Render question ───
+  function renderQuestion() {
+    var Q   = QUESTIONS[step];
+    var sel = answers[step] || [];
+    var isMulti = Q.type === 'multi';
+
+    var html = '<div class="lng-stage">'
+      + '<p class="lng-eyebrow">' + Q.eyebrow + '</p>'
+      + '<h2 class="lng-q">' + Q.q + '</h2>'
+      + '<p class="lng-sub">' + Q.sub + '</p>'
+      + '<div class="lng-opts' + (Q.cols === 1 ? ' single-col' : '') + '" role="group">';
+
+    Q.opts.forEach(function (o, idx) {
+      var on = sel.indexOf(idx) > -1;
+      var indicator = isMulti
+        ? '<span class="check"></span>'
+        : '<span class="dot"></span>';
+      html += '<button type="button" class="lng-opt' + (on ? ' sel' : '') + '" '
+        + 'data-idx="' + idx + '" aria-pressed="' + on + '">'
+        + indicator
+        + '<span class="emoji">' + o.e + '</span>'
+        + '<span>' + o.label + '</span>'
+        + '</button>';
+    });
+
+    html += '</div><div class="lng-nav">';
+    html += step > 0
+      ? '<button type="button" class="lng-btn lng-btn--ghost" id="lngBack">← Zpět</button>'
+      : '<span></span>';
+
+    var canNext = isMulti || sel.length > 0;
+    var lastQ   = step === total - 1;
+    html += '<button type="button" class="lng-btn lng-btn--primary" id="lngNext"'
+      + (canNext ? '' : ' disabled') + '>'
+      + (lastQ ? 'Zobrazit doporučení' : 'Pokračovat')
+      + '</button>';
+
+    html += '</div></div>';
+    app.innerHTML = html;
+    updateProgress();
+
+    // Click handlers
+    app.querySelectorAll('.lng-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = +btn.getAttribute('data-idx');
+        var cur = answers[step] || [];
+        if (!isMulti) {
+          answers[step] = [idx];
+          renderQuestion();
+          setTimeout(next, 260);
+        } else {
+          var p = cur.indexOf(idx);
+          if (p > -1) cur.splice(p, 1);
+          else cur.push(idx);
+          answers[step] = cur;
+          renderQuestion();
+        }
+      });
+    });
+
+    var nb = document.getElementById('lngNext');
+    if (nb) nb.addEventListener('click', next);
+    var bb = document.getElementById('lngBack');
+    if (bb) bb.addEventListener('click', back);
+  }
+
+  function next() {
+    var Q   = QUESTIONS[step];
+    var sel = answers[step] || [];
+    if (Q.type === 'single' && sel.length === 0) return;
+    if (step < total - 1) { step++; renderQuestion(); }
+    else { step = total; renderResult(); }
+  }
+
+  function back() {
+    if (step > 0) { step--; renderQuestion(); }
+  }
+
+  // ─── Scoring ───
+  // Q1 = váha 3 (nejdůležitější), Q2 = váha 2, Q3 = váha 1, Q4 = váha 1
+  function score() {
+    var s = {};
+    QUESTIONS.forEach(function (Q, qi) {
+      var sel = answers[qi] || [];
+      var w   = qi === 0 ? 3 : qi === 1 ? 2 : 1;
+      sel.forEach(function (oi) {
+        var tag = Q.opts[oi].tag;
+        if (tag) s[tag] = (s[tag] || 0) + w;
+      });
+    });
+
+    var ranked = PRODUCTS
+      .map(function (p) {
+        var sc = 0;
+        p.tags.forEach(function (t) { if (s[t]) sc += s[t]; });
+        return { p: p, sc: sc };
+      })
+      .filter(function (x) { return x.sc > 0 && !x.p.isBundle; })
+      .sort(function (a, b) { return b.sc - a.sc; });
+
+    // deduplicate by group (keep highest scorer per group)
+    var seen = {}, out = [];
+    ranked.forEach(function (x) {
+      var g = x.p.group;
+      if (g) { if (seen[g]) return; seen[g] = 1; }
+      out.push(x);
+    });
+    return out;
+  }
+
+  // ─── Render results ───
+  function renderResult() {
+    updateProgress();
+    segs.forEach(function (s) { s.classList.add('done'); });
+
+    var ranked = score();
+    if (ranked.length === 0) {
+      ranked = PRODUCTS
+        .filter(function (p) { return !p.isBundle && !p.group; })
+        .slice(0, 5)
+        .map(function (p) { return { p: p, sc: 0 }; });
+    }
+
+    // Top 2 = highlighted, rest = secondary (up to 5 total)
+    var top2  = ranked.slice(0, 2);
+    var rest  = ranked.slice(2, 5);
+
+    var html = '<div class="lng-stage">'
+      + '<div class="lng-result-head">'
+      + '<p class="lng-eyebrow">Tvoje doporučení</p>'
+      + '<h2 class="lng-q">Tohle ti sedne nejlíp</h2>'
+      + '<p class="lng-sub">Vybráno podle toho, co řešíš a čeho chceš dosáhnout.</p>'
+      + '</div>'
+      + '<div class="lng-cards">';
+
+    top2.forEach(function (x, idx) {
+      var p   = x.p;
+      var top = idx === 0;
+      html += '<div class="lng-card' + (top ? ' lng-card--top' : ' lng-card--2nd') + '">'
+        + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
+        + '<div class="lng-card-body">'
+        + (top ? '<span class="lng-badge">★ Nejlepší shoda</span>' : '<span class="lng-badge">★★ Výborná shoda</span>')
+        + '<h3 class="lng-pname">' + p.name + '</h3>'
+        + '<p class="lng-reason">' + p.reason + '</p>'
+        + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
+        + '<a class="lng-buy" href="' + p.url + '" target="_blank">Koupit</a></div>'
+        + '</div></div>';
+    });
+
+    if (rest.length > 0) {
+      html += '</div>';
+      html += '<p class="lng-section-label">Mohlo by se hodit i</p>';
+      html += '<div class="lng-cards">';
+      rest.forEach(function (x) {
+        var p = x.p;
+        html += '<div class="lng-card">'
+          + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
+          + '<div class="lng-card-body">'
+          + '<h3 class="lng-pname">' + p.name + '</h3>'
+          + '<p class="lng-reason">' + p.reason + '</p>'
+          + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
+          + '<a class="lng-buy" href="' + p.url + '" target="_blank">Koupit</a></div>'
+          + '</div></div>';
+      });
+    }
+
+    html += '</div>';
+
+    // Bundle
+    var bundle = null;
+    PRODUCTS.forEach(function (p) { if (p.isBundle) bundle = p; });
+    if (bundle) {
+      html += '<div class="lng-bundle"><div class="lng-bundle-body">'
+        + '<span class="lng-badge">Vše v jednom</span>'
+        + '<h4>' + bundle.name + '</h4>'
+        + '<p>' + bundle.reason + '</p>'
+        + '</div><a href="' + bundle.url + '" target="_blank">' + bundle.price + ' →</a></div>';
+    }
+
+    html += '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">Začít znovu</button></div>';
+    app.innerHTML = html;
+
+    // Fallback avatars for broken images
+    app.querySelectorAll('.lng-thumb').forEach(function (im) {
+      im.addEventListener('error', function () {
+        this.onerror = null;
+        var L = this.getAttribute('data-fb') || 'L';
+        this.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 78 78'>"
+          + "<rect width='78' height='78' rx='12' fill='#E3E7DD'/>"
+          + "<text x='50%' y='55%' font-family='Georgia,serif' font-size='34' fill='#2F6B57' "
+          + "text-anchor='middle' dominant-baseline='middle'>" + L + "</text></svg>");
+      });
+    });
+
+    document.getElementById('lngRestart').addEventListener('click', function () {
+      step = 0; answers = {}; renderQuestion();
+    });
+  }
+
+  // ─── Start ───
+  renderQuestion();
+
+})();
+</script>
+</body>
+</html>
