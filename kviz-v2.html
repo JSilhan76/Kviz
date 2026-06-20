@@ -1157,20 +1157,22 @@
 
     function addItemsToCart(items, btn) {
       if (!isOnShoptet()) {
-        // Fallback: open helper page (must be installed on Shoptet)
-        window.location.href = buildHelperUrl(items);
+        // Fallback: open helper page in new tab (must be installed on Shoptet)
+        window.open(buildHelperUrl(items), '_blank');
         return;
       }
       var validItems = items.filter(function (x) { return x.p && x.p.shoptetId; });
       if (validItems.length === 0) {
-        window.location.href = '/kosik/';
+        window.open('/kosik/', '_blank');
         return;
       }
       if (btn) { btn.disabled = true; btn.textContent = 'Přidávám…'; }
       var i = 0;
       function next() {
         if (i >= validItems.length) {
-          window.location.href = '/kosik/';
+          // Košík otevřít v novém tabu — kvíz zůstane otevřený
+          if (btn) { btn.disabled = false; btn.textContent = '✓ Přidáno – zobrazit košík'; }
+          btn.onclick = function () { window.open('/kosik/', '_blank'); };
           return;
         }
         var p = validItems[i].p;
