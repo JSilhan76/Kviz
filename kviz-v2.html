@@ -588,6 +588,42 @@
 
   .lng-restart { display: block; margin: 18px auto 0; }
 
+  /* ─── Cart action buttons ─── */
+  .lng-cart-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 28px 0 8px;
+  }
+  .lng-btn--cart-primary {
+    flex: 1;
+    min-width: 220px;
+    background: var(--jade);
+    color: #fff;
+    font-size: 15px;
+    padding: 15px 20px;
+    border-radius: var(--r);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  .lng-btn--cart-primary:hover { background: #27574a; }
+  .lng-btn--cart-all {
+    flex: 1;
+    min-width: 220px;
+    background: transparent;
+    color: var(--jade);
+    font-size: 15px;
+    padding: 15px 20px;
+    border-radius: var(--r);
+    border: 2px solid var(--jade);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s, color .2s;
+  }
+  .lng-btn--cart-all:hover { background: var(--jade); color: #fff; }
+
   @media (prefers-reduced-motion: reduce) {
     .lng-stage, .lng-intro { animation: none; }
     .lng-seg i { transition: none; }
@@ -610,85 +646,85 @@
 
   // ===== PRODUKTY =====
   var PRODUCTS = [
-    { id: 'glycine', name: 'Pure Glycine', price: '598 Kč', bestseller: true,
+    { id: 'glycine', name: 'Pure Glycine', price: '598 Kč', bestseller: true, code: 'LGL',
       url: 'https://www.longelite.com/pure-glycine/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/48-4_pure-glycine.jpg?69a7eeba',
       tags: ['spanek', 'regenerace', 'dlouhovekost', 'plet', 'sedavy'],
       reason: 'Čistý glycin zlepší hloubku spánku, podpoří tvorbu kolagenu a ochrání tělo před oxidačním stresem.' },
 
-    { id: 'magnesium', name: 'Magnesium Boost', price: '629 Kč', bestseller: true,
+    { id: 'magnesium', name: 'Magnesium Boost', price: '629 Kč', bestseller: true, code: 'LMAG',
       url: 'https://www.longelite.com/magnesium-boost/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/63_magnesium-boost.jpg?69a7eced',
       tags: ['spanek', 'stres', 'energie', 'regenerace', 'dlouhovekost', 'sedavy'],
       reason: 'Hořčík bisglycinát + B6 – klidnější spánek, méně stresu a lepší regenerace nervového systému.' },
 
-    { id: 'fiber', name: 'Fiber Complex', price: '990 Kč',
+    { id: 'fiber', name: 'Fiber Complex', price: '990 Kč', code: 'LFC',
       url: 'https://www.longelite.com/fiber-complex/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/86_vizu-20boza-20fiber-20complex-20web.png?6a020349',
       tags: ['traveni', 'metabolismus', 'sedavy'],
       reason: 'Prémiová vláknina pro klidné trávení, zdravý mikrobiom a stabilní hladinu cukru v krvi.' },
 
-    { id: 'cognitive', name: 'Cognitive Support', price: '1 089 Kč',
+    { id: 'cognitive', name: 'Cognitive Support', price: '1 089 Kč', code: 'LCS',
       url: 'https://www.longelite.com/longelite-cognitive-support-80-capsules/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/77_cognitive-final2.png?6a00cc85',
       tags: ['soustredeni', 'energie', 'praci', 'dlouhovekost'],
       reason: 'Vědecky ověřená kombinace pro lepší paměť, soustředění a mentální výkon – dnes i za 20 let.' },
 
-    { id: 'glucose', name: 'Glucose Control', price: '1 089 Kč',
+    { id: 'glucose', name: 'Glucose Control', price: '1 089 Kč', code: 'LGLU',
       url: 'https://www.longelite.com/glucose-control/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/66-4_glucose-control.jpg?69a7ee89',
       tags: ['metabolismus', 'energie', 'sedavy', 'dlouhovekost'],
       reason: 'Berberin + skořice + chrom pro stabilní krevní cukr a vyrovnanou energii bez odpoledních propadů.' },
 
-    { id: 'skin', name: 'Skin Protect & Repair', price: '1 150 Kč',
+    { id: 'skin', name: 'Skin Protect & Repair', price: '1 150 Kč', code: 'LSKN',
       url: 'https://www.longelite.com/skin-protect-repair/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/57-4_skin-protect-repair.jpg?69a7eece',
       tags: ['plet', 'dlouhovekost'],
       reason: 'Astaxanthin + vitamin C chrání pleť zevnitř, zpomalují viditelné stárnutí a podporují tvorbu kolagenu.' },
 
-    { id: 'sleep', name: 'Sleep Complex', price: '1 169 Kč', bestseller: true,
+    { id: 'sleep', name: 'Sleep Complex', price: '1 169 Kč', bestseller: true, code: 'LSLP',
       url: 'https://www.longelite.com/sleep-complex/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/54-4_sleep-complex.jpg?69a7f0f2',
       tags: ['spanek', 'stres', 'regenerace'],
       reason: 'Usneš rychleji, prospíš hlouběji a vstaneš odpočatý/á – bez návyku a bez ráního obluzení.' },
 
-    { id: 'menopause', name: 'Menopause Support', price: '1 249 Kč',
+    { id: 'menopause', name: 'Menopause Support', price: '1 249 Kč', code: 'LMS',
       url: 'https://www.longelite.com/menopause-support-80-capsules/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/80_menopause.png?6a00c066',
       tags: ['menopauza', 'spanek', 'stres', 'dlouhovekost'],
       reason: 'Bez hormonů zklidní návaly, podpoří spánek a náladu – navrženo speciálně pro perimenopauzu a menopauzu.' },
 
-    { id: 'matcha', name: 'Matcha Protein', price: '1 090 Kč', group: 'matcha',
+    { id: 'matcha', name: 'Matcha Protein', price: '1 090 Kč', group: 'matcha', code: 'LMP',
       url: 'https://www.longelite.com/matcha-protein/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/92_vizu-20doypack-20matcha-20protein-20800g-20web.png?6a1421b9',
       tags: ['regenerace', 'energie', 'soustredeni', 'sport', 'praci'],
       reason: 'Syrovátkový protein s japonskou matchou – regenerace svalů a jemná mentální energie z L-theaninu.' },
 
-    { id: 'matchacoco', name: 'Matcha–Coco Protein', price: '1 190 Kč', group: 'matcha',
+    { id: 'matchacoco', name: 'Matcha–Coco Protein', price: '1 190 Kč', group: 'matcha', code: 'LMCP',
       url: 'https://www.longelite.com/matcha-coco-protein/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/95_vizu-20doypack-20matcha-e2-80-93coco-20protein-20800g-20web.png?6a1462b8',
       tags: ['regenerace', 'energie', 'soustredeni', 'sport'],
       reason: 'Krémová matcha-kokosová varianta – regenerace, budování svalů a soustředění v jednom.' },
 
-    { id: 'postworkout', name: 'Post Workout Complex', price: '1 440 Kč', group: 'postworkout',
+    { id: 'postworkout', name: 'Post Workout Complex', price: '1 440 Kč', group: 'postworkout', code: 'LPW',
       url: 'https://www.longelite.com/post-workout-complex/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/60_vizu-20doypack-20post-20workout-20complex-201200-20g-20skorice-20web.png?6a01f9c2',
       tags: ['regenerace', 'sport', 'energie', 'dlouhovekost'],
       reason: 'Protein + kreatin + kolagen – komplexní podpora regenerace, svalové hmoty a zdraví kloubů.' },
 
-    { id: 'postworkoutv', name: 'Post Workout Complex – vanilka', price: '1 490 Kč', group: 'postworkout',
+    { id: 'postworkoutv', name: 'Post Workout Complex – vanilka', price: '1 490 Kč', group: 'postworkout', code: 'LPWCV',
       url: 'https://www.longelite.com/post-workout-complex-vanilka/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/83_vizu-20doypack-20post-20workout-20complex-201200-20g-20vanilka-20web.png?6a01f664',
       tags: ['regenerace', 'sport', 'energie'],
       reason: 'Protein + kreatin + kolagen ve variante vanilka – maximální regenerace a svalový růst.' },
 
-    { id: 'longevity', name: 'Longevity Essentials', price: '1 890 Kč',
+    { id: 'longevity', name: 'Longevity Essentials', price: '1 890 Kč', code: 'LESS',
       url: 'https://www.longelite.com/longevity-essentials/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/51_longevity-essentials.jpg?69a7eca5',
       tags: ['dlouhovekost', 'imunita', 'regenerace', 'energie', 'praci'],
       reason: 'Komplexní základ dlouhověkosti – mitochondrie, imunita, hormony, cévy a regenerace v jednom.' },
 
-    { id: 'corestack', name: 'Longelite Core Stack', price: '5 990 Kč',
+    { id: 'corestack', name: 'Longelite Core Stack', price: '5 990 Kč', code: 'LCOST2',
       priceOld: '7 965 Kč', saving: '1 975 Kč', group: 'corestack', isBundle: true,
       url: 'https://www.longelite.com/longelite-core-stack-2/',
       img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/89_longelite-produktove-fotky-square-a-web.jpg?6a1414df',
@@ -1078,10 +1114,47 @@
       + '<div class="lng-social-item">✓ <strong>Doprava zdarma od 2 000 Kč</strong></div>'
       + '</div>';
 
+    // Cart buttons
+    var allProducts = (intent !== 'single' && intent !== 'bundle')
+      ? primary.concat(secondary)
+      : primary;
+
+    html += '<div class="lng-cart-actions">'
+      + '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngCartPrimary">🛒 Přidat doporučené do košíku</button>'
+      + '<button type="button" class="lng-btn lng-btn--cart-all" id="lngCartAll">🛒 Přidat vše do košíku</button>'
+      + '</div>';
+
     html += '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">← Začít znovu</button>'
       + '</div>';
 
     app.innerHTML = html;
+
+    // Cart URL builder
+    function buildCartUrl(products) {
+      var base = 'https://www.longelite.com/action/Order/addMultipleItemsToCart/';
+      var params = [];
+      products.forEach(function (x, i) {
+        if (x.p && x.p.code) {
+          params.push('productCode%5B' + i + '%5D=' + encodeURIComponent(x.p.code));
+          params.push('count%5B' + i + '%5D=1');
+        }
+      });
+      if (params.length === 0) return 'https://www.longelite.com/kosik/';
+      if (params.length === 2) {
+        // Single product — use simpler addItem endpoint
+        var code = (products[0].p || {}).code || '';
+        return 'https://www.longelite.com/action/Order/addItem/?productCode=' + encodeURIComponent(code) + '&count=1';
+      }
+      return base + '?' + params.join('&');
+    }
+
+    document.getElementById('lngCartPrimary').addEventListener('click', function () {
+      window.open(buildCartUrl(primary), '_blank');
+    });
+
+    document.getElementById('lngCartAll').addEventListener('click', function () {
+      window.open(buildCartUrl(allProducts), '_blank');
+    });
 
     // Image fallback
     app.querySelectorAll('.lng-thumb').forEach(function (im) {
