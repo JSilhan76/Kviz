@@ -1131,7 +1131,7 @@
     // Shop buttons
     var allForShop = intent !== 'single' ? primary.concat(secondary) : primary;
 
-    html += '<div class="lng-cart-actions">'
+    html += '<div class="lng-cart-actions" id="lngCartActions">'
       + '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngShopPrimary">🛒 Přidat do košíku</button>'
       + (allForShop.length > 1 ? '<button type="button" class="lng-btn lng-btn--cart-all" id="lngShopAll">Přidat vše do košíku</button>' : '')
       + '</div>';
@@ -1155,7 +1155,7 @@
       return 'https://www.longelite.com/kviz-kosik/?items=' + pairs.join(',');
     }
 
-    var cartActions = document.querySelector('.lng-cart-actions');
+    var cartActions = document.getElementById('lngCartActions');
 
     function showCartButton() {
       cartActions.innerHTML = '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngViewCart">✓ Přidáno – zobrazit košík</button>';
