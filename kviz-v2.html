@@ -1187,13 +1187,23 @@
       next();
     }
 
-    document.getElementById('lngShopPrimary').addEventListener('click', function () {
-      addItemsToCart([primary[0]], this);
+    var cartBusy = false;
+
+    document.getElementById('lngShopPrimary').addEventListener('click', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (cartBusy) return;
+      cartBusy = true;
+      addItemsToCart(primary, this);
     });
 
     var allBtn = document.getElementById('lngShopAll');
     if (allBtn) {
-      allBtn.addEventListener('click', function () {
+      allBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (cartBusy) return;
+        cartBusy = true;
         addItemsToCart(allForShop, this);
       });
     }
