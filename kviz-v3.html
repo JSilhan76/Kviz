@@ -1155,20 +1155,32 @@
       return 'https://www.longelite.com/kviz-kosik/?items=' + pairs.join(',');
     }
 
+    var btnPrimary = document.getElementById('lngShopPrimary');
+    var btnAll     = document.getElementById('lngShopAll');
     var cartActions = document.getElementById('lngCartActions');
 
     function showCartButton() {
-      cartActions.innerHTML = '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngViewCart">✓ Přidáno – zobrazit košík</button>';
-      document.getElementById('lngViewCart').addEventListener('click', function (e) {
+      // Odstraň všechny children a vlož jediné tlačítko
+      while (cartActions.firstChild) cartActions.removeChild(cartActions.firstChild);
+      var viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'lng-btn lng-btn--cart-primary';
+      viewBtn.textContent = '✓ Přidáno – zobrazit košík';
+      viewBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
         window.open('/kosik/', '_blank');
       });
+      cartActions.appendChild(viewBtn);
+    }
+
+    function hideCartButtons() {
+      if (btnPrimary) { btnPrimary.disabled = true; btnPrimary.textContent = 'Přidávám…'; }
+      if (btnAll)     { btnAll.style.display = 'none'; }
     }
 
     function addItemsToCart(items) {
-      // Okamžitě schovej obě tlačítka a ukaž "Přidávám…"
-      cartActions.innerHTML = '<button type="button" class="lng-btn lng-btn--cart-primary" disabled>Přidávám…</button>';
+      hideCartButtons();
       if (!isOnShoptet()) {
         window.open(buildHelperUrl(items), '_blank');
         showCartButton();
@@ -1176,7 +1188,7 @@
       }
       var validItems = items.filter(function (x) { return x.p && x.p.shoptetId; });
       if (validItems.length === 0) {
-        window.open('/kosik/', '_blank');
+        showCartButton();
         return;
       }
       var i = 0;
@@ -1199,7 +1211,7 @@
 
     var cartBusy = false;
 
-    document.getElementById('lngShopPrimary').addEventListener('click', function (e) {
+    if (btnPrimary) btnPrimary.addEventListener('click', function (e) {
       e.stopPropagation();
       e.preventDefault();
       if (cartBusy) return;
@@ -1207,7 +1219,7 @@
       addItemsToCart(primary);
     });
 
-    var allBtn = document.getElementById('lngShopAll');
+    var allBtn = btnAll;
     if (allBtn) {
       allBtn.addEventListener('click', function (e) {
         e.stopPropagation();
