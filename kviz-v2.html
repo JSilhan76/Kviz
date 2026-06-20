@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Longelite – Osobní protokol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #D8DBD3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
+  }
+
+  .lng-quiz {
+    --paper: #EEF0EA;
+    --ink: #1A2620;
+    --ink-soft: #4C5750;
+    --jade: #2F6B57;
+    --jade-bright: #4FA388;
+    --gold: #A9824A;
+    --gold-light: #F5ECD9;
+    --line: #D6D9CF;
+    --card: #FBFBF7;
+    --shadow: 0 1px 2px rgba(26,38,32,.04), 0 8px 30px rgba(26,38,32,.06);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 740px;
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(20px, 4vw, 40px);
+    border-radius: 22px;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lng-quiz * { box-sizing: border-box; }
+
+  .lng-quiz::before {
+    content: "";
+    position: absolute;
+    top: -160px; right: -120px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(79,163,136,.22), transparent 68%);
+    filter: blur(8px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .lng-quiz > * { position: relative; z-index: 1; }
+
+  /* ─── Header ─── */
+  .lng-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: clamp(22px, 4vw, 34px);
+  }
+
+  .lng-brand {
+    font-family: 'Fraunces';
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--jade);
+  }
+
+  .lng-prog { flex: 1; display: flex; gap: 6px; }
+
+  .lng-seg {
+    height: 4px;
+    flex: 1;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .lng-seg i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--jade-bright);
+    border-radius: 99px;
+    transition: width .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .lng-seg.done i, .lng-seg.active i { width: 100%; }
+
+  .lng-count {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ─── Intro screen ─── */
+  .lng-intro {
+    text-align: center;
+    padding: 12px 0 4px;
+    animation: lngIn .5s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .lng-intro-icon {
+    font-size: 44px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .lng-intro h1 {
+    font-family: 'Fraunces';
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 500;
+    margin: 0 0 12px;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+  }
+
+  .lng-intro p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+    line-height: 1.6;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Gender picker */
+  .lng-gender-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .lng-gender-btn {
+    flex: 1;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: border-color .18s, background .18s, transform .12s;
+  }
+
+  .lng-gender-btn:hover { border-color: var(--jade-bright); transform: translateY(-1px); }
+  .lng-gender-btn.sel   { border-color: var(--jade); background: #F1F6F2; }
+  .lng-gender-btn span:first-child { font-size: 32px; line-height: 1; }
+
+  .lng-trust {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .lng-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .lng-trust-item span:first-child { color: var(--jade); font-size: 15px; }
+
+  /* ─── Stage animation ─── */
+  .lng-stage { animation: lngIn .5s cubic-bezier(.22,1,.36,1) both; }
+
+  @keyframes lngIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── Question text ─── */
+  .lng-eyebrow {
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--jade);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .lng-q {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: clamp(22px, 4vw, 30px);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    letter-spacing: -.01em;
+  }
+
+  .lng-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    line-height: 1.5;
+  }
+
+  /* ─── Options ─── */
+  .lng-opts {
+    display: grid;
+    gap: 9px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lng-opts.single-col { grid-template-columns: 1fr; }
+
+  @media (max-width: 480px) {
+    .lng-opts { grid-template-columns: 1fr; }
+  }
+
+  .lng-opt {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 15px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: border-color .18s, background .18s, transform .12s;
+    line-height: 1.35;
+  }
+
+  .lng-opt:hover { border-color: var(--jade-bright); transform: translateY(-1px); }
+  .lng-opt:focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
+
+  .lng-opt .dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s;
+  }
+
+  .lng-opt .dot::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--jade);
+    transform: scale(0);
+    transition: transform .18s;
+  }
+
+  .lng-opt .check {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s, background .18s;
+  }
+
+  .lng-opt .check::after {
+    content: "";
+    width: 11px; height: 7px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0) translateY(-1px);
+    transition: transform .18s;
+  }
+
+  .lng-opt.sel { border-color: var(--jade); background: #F1F6F2; }
+  .lng-opt.sel .dot { border-color: var(--jade); }
+  .lng-opt.sel .dot::after { transform: scale(1); }
+  .lng-opt.sel .check { border-color: var(--jade); background: var(--jade); }
+  .lng-opt.sel .check::after { transform: rotate(-45deg) scale(1) translateY(-1px); }
+
+  .lng-opt .emoji { font-size: 18px; line-height: 1; flex: none; }
+
+  /* Highlighted option (bundle intent) */
+  .lng-opt.opt-highlight {
+    border-color: var(--gold);
+    background: var(--gold-light);
+  }
+
+  .lng-opt.opt-highlight.sel {
+    border-color: var(--gold);
+    background: #EDD9AA;
+  }
+
+  .lng-opt.opt-highlight .check {
+    border-color: var(--gold);
+  }
+
+  .lng-opt.opt-highlight.sel .check {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* ─── Navigation ─── */
+  .lng-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+    gap: 12px;
+  }
+
+  .lng-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 99px;
+    padding: 13px 26px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity .18s, transform .12s, background .18s;
+  }
+
+  .lng-btn:active { transform: translateY(1px); }
+  .lng-btn--primary { background: var(--jade); color: #fff; }
+  .lng-btn--primary:hover { background: #27574a; }
+  .lng-btn--primary:disabled { opacity: .35; cursor: not-allowed; }
+  .lng-btn--ghost { background: transparent; color: var(--ink-soft); padding: 13px 8px; }
+  .lng-btn--ghost:hover { color: var(--ink); }
+  .lng-btn--large { font-size: 16px; padding: 15px 34px; }
+
+  /* ─── Results ─── */
+  .lng-result-head {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+
+  .lng-result-head .lng-eyebrow { margin-bottom: 6px; }
+
+  .lng-result-head .lng-q { margin-bottom: 8px; }
+
+  .lng-profile-line {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .lng-cards { display: flex; flex-direction: column; gap: 13px; }
+
+  .lng-card {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    transition: transform .15s;
+  }
+
+  .lng-card:hover { transform: translateY(-1px); }
+
+  .lng-card--top {
+    border-color: var(--jade);
+    box-shadow: 0 10px 34px rgba(47,107,87,.14);
+  }
+
+  .lng-card--2nd { border-color: #b5c4bc; }
+
+  .lng-thumb {
+    width: 80px; height: 80px;
+    flex: none;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #E3E7DD;
+  }
+
+  .lng-card-body { flex: 1; min-width: 0; }
+
+  .lng-badges { display: flex; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+
+  .lng-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 99px;
+  }
+
+  .lng-badge--gold { background: var(--gold-light); color: var(--gold); }
+  .lng-badge--green { background: #DCF0E8; color: var(--jade); }
+  .lng-badge--gray { background: #E8EBE5; color: var(--ink-soft); }
+
+  .lng-pname {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .lng-reason {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+    line-height: 1.45;
+  }
+
+  .lng-buyrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .lng-price { font-weight: 700; font-size: 15px; }
+
+  .lng-buy {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--jade);
+    padding: 9px 20px;
+    border-radius: 99px;
+    transition: background .18s;
+    white-space: nowrap;
+  }
+
+  .lng-buy:hover { background: #27574a; }
+  .lng-card--top .lng-buy { background: var(--gold); }
+  .lng-card--top .lng-buy:hover { background: #8f6c3b; }
+
+  @media (max-width: 440px) {
+    .lng-card { flex-direction: column; align-items: flex-start; }
+    .lng-thumb { width: 100%; height: 120px; }
+  }
+
+  /* ─── Section divider ─── */
+  .lng-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 20px 0 10px;
+  }
+
+  /* ─── Bundle ─── */
+  .lng-bundle {
+    margin-top: 20px;
+    background: linear-gradient(135deg, #1E2D28, #2F6B57);
+    color: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lng-bundle::before {
+    content: "";
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,.05);
+    border-radius: 50%;
+  }
+
+  .lng-bundle-inner {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .lng-bundle-body { flex: 1; min-width: 0; }
+
+  .lng-bundle .lng-badge { margin-bottom: 6px; }
+  .lng-bundle .lng-badge--saving { background: rgba(255,255,255,.15); color: #fff; }
+
+  .lng-bundle h4 {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 5px;
+    color: #fff;
+  }
+
+  .lng-bundle p {
+    font-size: 13px;
+    margin: 0 0 12px;
+    color: rgba(255,255,255,.78);
+    line-height: 1.45;
+  }
+
+  .lng-bundle-prices {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .lng-bundle-price-new {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .lng-bundle-price-old {
+    font-size: 14px;
+    color: rgba(255,255,255,.55);
+    text-decoration: line-through;
+  }
+
+  .lng-bundle-saving {
+    font-size: 12px;
+    font-weight: 600;
+    background: #4FA388;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  .lng-bundle a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E2D28;
+    background: #fff;
+    padding: 12px 24px;
+    border-radius: 99px;
+    transition: background .18s;
+    white-space: nowrap;
+  }
+
+  .lng-bundle a:hover { background: #EDEAE0; }
+
+  @media (max-width: 500px) {
+    .lng-bundle-inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ─── Social proof bar ─── */
+  .lng-social {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .lng-social-item {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .lng-social-item strong { color: var(--ink); }
+
+  .lng-restart { display: block; margin: 18px auto 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lng-stage, .lng-intro { animation: none; }
+    .lng-seg i { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lng-quiz" role="region" aria-label="Longelite osobní protokol">
+  <div class="lng-top">
+    <span class="lng-brand">Longelite</span>
+    <div class="lng-prog" id="lngProg" aria-hidden="true"></div>
+    <span class="lng-count" id="lngCount"></span>
+  </div>
+  <div id="lngApp"></div>
+</div>
+
+<script>
+(function () {
+
+  // ===== PRODUKTY =====
+  var PRODUCTS = [
+    { id: 'glycine', name: 'Pure Glycine', price: '598 Kč', bestseller: true,
+      url: 'https://www.longelite.com/pure-glycine/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/48-4_pure-glycine.jpg?69a7eeba',
+      tags: ['spanek', 'regenerace', 'dlouhovekost', 'plet', 'sedavy'],
+      reason: 'Čistý glycin zlepší hloubku spánku, podpoří tvorbu kolagenu a ochrání tělo před oxidačním stresem.' },
+
+    { id: 'magnesium', name: 'Magnesium Boost', price: '629 Kč', bestseller: true,
+      url: 'https://www.longelite.com/magnesium-boost/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/63_magnesium-boost.jpg?69a7eced',
+      tags: ['spanek', 'stres', 'energie', 'regenerace', 'dlouhovekost', 'sedavy'],
+      reason: 'Hořčík bisglycinát + B6 – klidnější spánek, méně stresu a lepší regenerace nervového systému.' },
+
+    { id: 'fiber', name: 'Fiber Complex', price: '990 Kč',
+      url: 'https://www.longelite.com/fiber-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/86_vizu-20boza-20fiber-20complex-20web.png?6a020349',
+      tags: ['traveni', 'metabolismus', 'sedavy'],
+      reason: 'Prémiová vláknina pro klidné trávení, zdravý mikrobiom a stabilní hladinu cukru v krvi.' },
+
+    { id: 'cognitive', name: 'Cognitive Support', price: '1 089 Kč',
+      url: 'https://www.longelite.com/longelite-cognitive-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/77_cognitive-final2.png?6a00cc85',
+      tags: ['soustredeni', 'energie', 'praci', 'dlouhovekost'],
+      reason: 'Vědecky ověřená kombinace pro lepší paměť, soustředění a mentální výkon – dnes i za 20 let.' },
+
+    { id: 'glucose', name: 'Glucose Control', price: '1 089 Kč',
+      url: 'https://www.longelite.com/glucose-control/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/66-4_glucose-control.jpg?69a7ee89',
+      tags: ['metabolismus', 'energie', 'sedavy', 'dlouhovekost'],
+      reason: 'Berberin + skořice + chrom pro stabilní krevní cukr a vyrovnanou energii bez odpoledních propadů.' },
+
+    { id: 'skin', name: 'Skin Protect & Repair', price: '1 150 Kč',
+      url: 'https://www.longelite.com/skin-protect-repair/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/57-4_skin-protect-repair.jpg?69a7eece',
+      tags: ['plet', 'dlouhovekost'],
+      reason: 'Astaxanthin + vitamin C chrání pleť zevnitř, zpomalují viditelné stárnutí a podporují tvorbu kolagenu.' },
+
+    { id: 'sleep', name: 'Sleep Complex', price: '1 169 Kč', bestseller: true,
+      url: 'https://www.longelite.com/sleep-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/54-4_sleep-complex.jpg?69a7f0f2',
+      tags: ['spanek', 'stres', 'regenerace'],
+      reason: 'Usneš rychleji, prospíš hlouběji a vstaneš odpočatý/á – bez návyku a bez ráního obluzení.' },
+
+    { id: 'menopause', name: 'Menopause Support', price: '1 249 Kč',
+      url: 'https://www.longelite.com/menopause-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/80_menopause.png?6a00c066',
+      tags: ['menopauza', 'spanek', 'stres', 'dlouhovekost'],
+      reason: 'Bez hormonů zklidní návaly, podpoří spánek a náladu – navrženo speciálně pro perimenopauzu a menopauzu.' },
+
+    { id: 'matcha', name: 'Matcha Protein', price: '1 090 Kč', group: 'matcha',
+      url: 'https://www.longelite.com/matcha-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/92_vizu-20doypack-20matcha-20protein-20800g-20web.png?6a1421b9',
+      tags: ['regenerace', 'energie', 'soustredeni', 'sport', 'praci'],
+      reason: 'Syrovátkový protein s japonskou matchou – regenerace svalů a jemná mentální energie z L-theaninu.' },
+
+    { id: 'matchacoco', name: 'Matcha–Coco Protein', price: '1 190 Kč', group: 'matcha',
+      url: 'https://www.longelite.com/matcha-coco-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/95_vizu-20doypack-20matcha-e2-80-93coco-20protein-20800g-20web.png?6a1462b8',
+      tags: ['regenerace', 'energie', 'soustredeni', 'sport'],
+      reason: 'Krémová matcha-kokosová varianta – regenerace, budování svalů a soustředění v jednom.' },
+
+    { id: 'postworkout', name: 'Post Workout Complex', price: '1 440 Kč', group: 'postworkout',
+      url: 'https://www.longelite.com/post-workout-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/60_vizu-20doypack-20post-20workout-20complex-201200-20g-20skorice-20web.png?6a01f9c2',
+      tags: ['regenerace', 'sport', 'energie', 'dlouhovekost'],
+      reason: 'Protein + kreatin + kolagen – komplexní podpora regenerace, svalové hmoty a zdraví kloubů.' },
+
+    { id: 'postworkoutv', name: 'Post Workout Complex – vanilka', price: '1 490 Kč', group: 'postworkout',
+      url: 'https://www.longelite.com/post-workout-complex-vanilka/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/83_vizu-20doypack-20post-20workout-20complex-201200-20g-20vanilka-20web.png?6a01f664',
+      tags: ['regenerace', 'sport', 'energie'],
+      reason: 'Protein + kreatin + kolagen ve variante vanilka – maximální regenerace a svalový růst.' },
+
+    { id: 'longevity', name: 'Longevity Essentials', price: '1 890 Kč',
+      url: 'https://www.longelite.com/longevity-essentials/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/51_longevity-essentials.jpg?69a7eca5',
+      tags: ['dlouhovekost', 'imunita', 'regenerace', 'energie', 'praci'],
+      reason: 'Komplexní základ dlouhověkosti – mitochondrie, imunita, hormony, cévy a regenerace v jednom.' },
+
+    { id: 'corestack', name: 'Longelite Core Stack', price: '5 990 Kč',
+      priceOld: '7 965 Kč', saving: '1 975 Kč', group: 'corestack', isBundle: true,
+      url: 'https://www.longelite.com/longelite-core-stack-2/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/89_longelite-produktove-fotky-square-a-web.jpg?6a1414df',
+      tags: ['dlouhovekost'],
+      reason: 'Kompletní měsíční protokol v jednom balení – spánek, energie, metabolismus, imunita a regenerace bez přemýšlení.' }
+  ];
+
+  // ===== OTÁZKY =====
+  // Konverzní strategie:
+  // Q1 → bolest (multi) – identifikace, investice do kvízu
+  // Q2 → cíl (single) – závazek, směřování k výsledku
+  // Q3 → životní styl (single) – segmentace, přizpůsobení produktů
+  // Q4 → záměr nákupu (single) – klíčová otázka pro push na bundle
+
+  var QUESTIONS = [
+
+    { type: 'multi', cols: 2, eyebrow: 'Krok 1 ze 4',
+      q: 'Co tě aktuálně omezuje nebo trápí?',
+      sub: 'Vyber vše, co se tě týká. Čím více zadáš, tím přesnější doporučení dostaneš.',
+      opts: [
+        { e: '😴', label: 'Únava, chybí mi energie',         tag: 'energie' },
+        { e: '🌙', label: 'Špatný nebo neklidný spánek',    tag: 'spanek' },
+        { e: '😰', label: 'Stres, napětí, podrážděnost',   tag: 'stres' },
+        { e: '🧠', label: 'Hůř se soustředím nebo zapomínám', tag: 'soustredeni' },
+        { e: '🫧', label: 'Trávení nebo nadýmání',          tag: 'traveni' },
+        { e: '💪', label: 'Pomalá regenerace po sportu',    tag: 'sport' },
+        { e: '✨', label: 'Pleť a viditelné stárnutí',       tag: 'plet' },
+        { e: '📈', label: 'Váha, cukr, metabolismus',       tag: 'metabolismus' },
+        { e: '🌸', label: 'Menopauza',                       tag: 'menopauza' },
+        { e: '🛡️', label: 'Slabá imunita',                  tag: 'imunita' }
+      ]
+    },
+
+    { type: 'single', cols: 1, eyebrow: 'Krok 2 ze 4',
+      q: 'Čeho chceš hlavně dosáhnout?',
+      sub: 'Jeden jasný cíl pomůže najít to nejdůležitější.',
+      opts: [
+        { e: '⚡', label: 'Mít víc energie a lepší výkon v práci i v životě', tag: 'praci' },
+        { e: '😴', label: 'Líp spát a rychleji regenerovat',                  tag: 'spanek' },
+        { e: '🕊️', label: 'Zbavit se stresu a mít klidnější mysl',          tag: 'stres' },
+        { e: '⏳', label: 'Zpomalit stárnutí a žít dlouho zdravě',           tag: 'dlouhovekost' },
+        { e: '💪', label: 'Zlepšit sportovní výkon a tělesnou kompozici',    tag: 'sport' }
+      ]
+    },
+
+    { type: 'single', cols: 2, eyebrow: 'Krok 3 ze 4',
+      q: 'Jak vypadá tvůj typický den?',
+      sub: 'Životní styl výrazně ovlivňuje, jaké produkty mají největší smysl.',
+      opts: [
+        { e: '🏋', label: 'Sportuji 3× a více týdně',         tag: 'sport' },
+        { e: '🚶', label: 'Pohybuji se mírně, chůze, jóga',   tag: '' },
+        { e: '💻', label: 'Sedím většinu dne, náročná práce', tag: 'sedavy' },
+        { e: '🌸', label: 'Procházím menopauzou',              tag: 'menopauza' }
+      ]
+    },
+
+    { type: 'single', cols: 1, eyebrow: 'Krok 4 ze 4',
+      q: 'Jak přistupuješ k péči o zdraví?',
+      sub: 'Upřímná odpověď nám pomůže navrhnout to nejlepší řešení.',
+      opts: [
+        { e: '🎯', label: 'Chci začít s jedním spolehlivým produktem – jednoduše a bez přemýšlení',        tag: '', intent: 'single' },
+        { e: '🔬', label: 'Rád/a kombinuji – chci vybrat 2–3 produkty podle svých priorit',               tag: '', intent: 'multi' },
+        { e: '🚀', label: 'Chci kompletní protokol hned – maximální efekt, všechno v jednom',             tag: 'dlouhovekost', intent: 'bundle', highlight: true }
+      ]
+    }
+  ];
+
+  // ===== STAV =====
+  var step = 0, answers = {}, total = QUESTIONS.length;
+  var gender = null; // 'male' | 'female'
+  var app     = document.getElementById('lngApp');
+  var progEl  = document.getElementById('lngProg');
+  var countEl = document.getElementById('lngCount');
+
+  // Intro screen
+  renderIntro();
+
+  function renderIntro() {
+    progEl.innerHTML = '';
+    countEl.textContent = '';
+    gender = null;
+    app.innerHTML = '<div class="lng-intro">'
+      + '<span class="lng-intro-icon">🧬</span>'
+      + '<h1>Najdi svůj osobní Longelite protokol</h1>'
+      + '<p>4 otázky. Vědecky podložené složení. Doporučení přesně pro tebe – podle toho, co řešíš a čeho chceš dosáhnout.</p>'
+      + '<div class="lng-gender-row">'
+      + '<button type="button" class="lng-gender-btn" id="gMale"><span>👨</span><span>Jsem muž</span></button>'
+      + '<button type="button" class="lng-gender-btn" id="gFemale"><span>👩</span><span>Jsem žena</span></button>'
+      + '</div>'
+      + '<div class="lng-trust">'
+      + '<div class="lng-trust-item"><span>✓</span><span>Výroba v ČR</span></div>'
+      + '<div class="lng-trust-item"><span>✓</span><span>Vědecky ověřené složení</span></div>'
+      + '<div class="lng-trust-item"><span>✓</span><span>Trvá méně než 2 minuty</span></div>'
+      + '</div>'
+      + '<button type="button" class="lng-btn lng-btn--primary lng-btn--large" id="lngStart" disabled>Začít →</button>'
+      + '</div>';
+
+    var btnMale   = document.getElementById('gMale');
+    var btnFemale = document.getElementById('gFemale');
+    var btnStart  = document.getElementById('lngStart');
+
+    function pickGender(g) {
+      gender = g;
+      btnMale.classList.toggle('sel',   g === 'male');
+      btnFemale.classList.toggle('sel', g === 'female');
+      btnStart.disabled = false;
+    }
+
+    btnMale.addEventListener('click',   function () { pickGender('male'); });
+    btnFemale.addEventListener('click', function () { pickGender('female'); });
+
+    btnStart.addEventListener('click', function () {
+      if (!gender) return;
+      initProgress();
+      renderQuestion();
+    });
+  }
+
+  function initProgress() {
+    progEl.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+      progEl.insertAdjacentHTML('beforeend', '<span class="lng-seg"><i></i></span>');
+    }
+  }
+
+  var segs;
+  function getSegs() { segs = progEl.querySelectorAll('.lng-seg'); }
+
+  function updateProgress() {
+    getSegs();
+    segs.forEach(function (s, idx) {
+      s.classList.remove('active', 'done');
+      if (idx < step) s.classList.add('done');
+      else if (idx === step && step < total) s.classList.add('active');
+    });
+    countEl.textContent = step < total ? (step + 1) + ' / ' + total : '';
+  }
+
+  // Vrátí volby pro daný krok – pro muže odfiltruje menopauza možnosti
+  function getOpts(Q) {
+    if (gender === 'male') {
+      return Q.opts.filter(function (o) { return o.tag !== 'menopauza'; });
+    }
+    return Q.opts;
+  }
+
+  // ===== RENDER QUESTION =====
+  function renderQuestion() {
+    var Q       = QUESTIONS[step];
+    var opts    = getOpts(Q);
+    var sel     = answers[step] || [];
+    var isMulti = Q.type === 'multi';
+
+    var html = '<div class="lng-stage">'
+      + '<p class="lng-eyebrow">' + Q.eyebrow + '</p>'
+      + '<h2 class="lng-q">' + Q.q + '</h2>'
+      + '<p class="lng-sub">' + Q.sub + '</p>'
+      + '<div class="lng-opts' + (Q.cols === 1 ? ' single-col' : '') + '" role="group">';
+
+    // Iterujeme přes filtrované opts, ale data-idx je index v opts (ne v Q.opts)
+    opts.forEach(function (o, idx) {
+      var on        = sel.indexOf(idx) > -1;
+      var indicator = isMulti ? '<span class="check"></span>' : '<span class="dot"></span>';
+      var hlClass   = o.highlight ? ' opt-highlight' : '';
+      html += '<button type="button" class="lng-opt' + (on ? ' sel' : '') + hlClass + '" '
+        + 'data-idx="' + idx + '" aria-pressed="' + on + '">'
+        + indicator
+        + '<span class="emoji">' + o.e + '</span>'
+        + '<span>' + o.label + '</span>'
+        + '</button>';
+    });
+
+    html += '</div><div class="lng-nav">';
+    html += step > 0
+      ? '<button type="button" class="lng-btn lng-btn--ghost" id="lngBack">← Zpět</button>'
+      : '<span></span>';
+
+    var canNext = isMulti || sel.length > 0;
+    var lastQ   = step === total - 1;
+    html += '<button type="button" class="lng-btn lng-btn--primary" id="lngNext"'
+      + (canNext ? '' : ' disabled') + '>'
+      + (lastQ ? 'Zobrazit můj protokol →' : 'Pokračovat')
+      + '</button>';
+
+    html += '</div></div>';
+    app.innerHTML = html;
+    updateProgress();
+
+    app.querySelectorAll('.lng-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = +btn.getAttribute('data-idx');
+        var cur = answers[step] || [];
+        if (!isMulti) {
+          answers[step] = [idx];
+          renderQuestion();
+          setTimeout(next, 280);
+        } else {
+          var p = cur.indexOf(idx);
+          if (p > -1) cur.splice(p, 1); else cur.push(idx);
+          answers[step] = cur;
+          renderQuestion();
+        }
+      });
+    });
+
+    var nb = document.getElementById('lngNext'); if (nb) nb.addEventListener('click', next);
+    var bb = document.getElementById('lngBack'); if (bb) bb.addEventListener('click', back);
+  }
+
+  function next() {
+    var Q = QUESTIONS[step], sel = answers[step] || [];
+    if (Q.type === 'single' && sel.length === 0) return;
+    if (step < total - 1) { step++; renderQuestion(); }
+    else { step = total; renderResult(); }
+  }
+
+  function back() {
+    if (step > 0) { step--; renderQuestion(); }
+  }
+
+  // ===== SCORING =====
+  // Q1 (bolest)   = váha 3 – nejsilnější signál
+  // Q2 (cíl)      = váha 3 – stejně důležitý
+  // Q3 (životní styl) = váha 2
+  // Q4 (přístup/záměr) = pouze intent flag, ne scoring
+
+  function getPurchaseIntent() {
+    var sel  = answers[3] || [];
+    if (sel.length === 0) return 'multi';
+    var opts = getOpts(QUESTIONS[3]);
+    var opt  = opts[sel[0]];
+    return opt ? (opt.intent || 'multi') : 'multi';
+  }
+
+  function score() {
+    var s = {};
+    [0, 1, 2].forEach(function (qi) {
+      var Q    = QUESTIONS[qi];
+      var opts = getOpts(Q);   // použij filtrované opts (bez menopauzy pro muže)
+      var sel  = answers[qi] || [];
+      var w    = (qi === 0 || qi === 1) ? 3 : 2;
+      sel.forEach(function (oi) {
+        var tag = opts[oi] ? opts[oi].tag : null;
+        if (tag) s[tag] = (s[tag] || 0) + w;
+      });
+    });
+
+    var ranked = PRODUCTS
+      .map(function (p) {
+        var sc = 0;
+        p.tags.forEach(function (t) { if (s[t]) sc += s[t]; });
+        return { p: p, sc: sc };
+      })
+      .filter(function (x) {
+        if (x.p.isBundle) return false;
+        // Pro muže vynech menopause produkt
+        if (gender === 'male' && x.p.id === 'menopause') return false;
+        return x.sc > 0;
+      })
+      .sort(function (a, b) { return b.sc - a.sc; });
+
+    // deduplicate groups
+    var seen = {}, out = [];
+    ranked.forEach(function (x) {
+      var g = x.p.group;
+      if (g) { if (seen[g]) return; seen[g] = 1; }
+      out.push(x);
+    });
+
+    // fallback
+    if (out.length === 0) {
+      out = [
+        { p: PRODUCTS.filter(function(p){return p.id==='magnesium';})[0], sc: 0 },
+        { p: PRODUCTS.filter(function(p){return p.id==='glycine';})[0], sc: 0 },
+        { p: PRODUCTS.filter(function(p){return p.id==='longevity';})[0], sc: 0 }
+      ];
+    }
+
+    return out;
+  }
+
+  // ===== RENDER RESULTS =====
+  function renderResult() {
+    updateProgress();
+    getSegs();
+    segs.forEach(function (s) { s.classList.add('done'); });
+
+    var ranked  = score();
+    var intent  = getPurchaseIntent();
+
+    // How many primary products to show depends on intent
+    var primaryCount = intent === 'single' ? 1 : intent === 'bundle' ? 2 : 3;
+    var primary = ranked.slice(0, primaryCount);
+    var secondary = intent !== 'single' ? ranked.slice(primaryCount, 5) : ranked.slice(1, 4);
+
+    // Build profile summary
+    var painSel  = (answers[0] || []).map(function (i) { return QUESTIONS[0].opts[i].label; });
+    var goalSel  = (answers[1] || []).map(function (i) { return QUESTIONS[1].opts[i].label; });
+    var profileLine = painSel.length > 0
+      ? 'Profil: ' + painSel.slice(0, 2).join(', ').toLowerCase() + (goalSel.length > 0 ? ' · Cíl: ' + goalSel[0].toLowerCase() : '')
+      : 'Personalizované doporučení připraveno.';
+
+    var html = '<div class="lng-stage">'
+      + '<div class="lng-result-head">'
+      + '<p class="lng-eyebrow">Váš osobní protokol</p>'
+      + '<h2 class="lng-q">Tohle ti sedne nejlíp</h2>'
+      + '<p class="lng-profile-line">' + profileLine + '</p>'
+      + '</div>';
+
+    // Primary products
+    html += '<div class="lng-cards">';
+    primary.forEach(function (x, idx) {
+      var p   = x.p;
+      var top = idx === 0;
+      html += '<div class="lng-card' + (top ? ' lng-card--top' : (idx === 1 ? ' lng-card--2nd' : '')) + '">'
+        + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
+        + '<div class="lng-card-body">'
+        + '<div class="lng-badges">'
+        + (top ? '<span class="lng-badge lng-badge--gold">★ Nejlepší shoda</span>' : '')
+        + (p.bestseller ? '<span class="lng-badge lng-badge--green">Bestseller</span>' : '')
+        + '</div>'
+        + '<h3 class="lng-pname">' + p.name + '</h3>'
+        + '<p class="lng-reason">' + p.reason + '</p>'
+        + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
+        + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+        + '</div></div></div>';
+    });
+    html += '</div>';
+
+    // Secondary / "also bought" products
+    if (secondary.length > 0 && intent !== 'bundle') {
+      html += '<p class="lng-section-label">Mohlo by se ti hodit i</p>'
+        + '<div class="lng-cards">';
+      secondary.forEach(function (x) {
+        var p = x.p;
+        html += '<div class="lng-card">'
+          + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
+          + '<div class="lng-card-body">'
+          + (p.bestseller ? '<div class="lng-badges"><span class="lng-badge lng-badge--green">Bestseller</span></div>' : '')
+          + '<h3 class="lng-pname">' + p.name + '</h3>'
+          + '<p class="lng-reason">' + p.reason + '</p>'
+          + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
+          + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+          + '</div></div></div>';
+      });
+      html += '</div>';
+    }
+
+    // Bundle – vždy zobrazit, zvláštní emphasis pokud intent === 'bundle'
+    var bundle = null;
+    PRODUCTS.forEach(function (p) { if (p.isBundle) bundle = p; });
+    if (bundle) {
+      var bigSave = intent === 'bundle';
+      html += '<div class="lng-bundle">'
+        + '<div class="lng-bundle-inner">'
+        + '<div class="lng-bundle-body">'
+        + '<div class="lng-badges">'
+        + '<span class="lng-badge lng-badge--saving">' + (bigSave ? '🚀 Doporučeno pro tebe' : 'Vše v jednom') + '</span>'
+        + '</div>'
+        + '<h4>' + bundle.name + '</h4>'
+        + '<p>' + bundle.reason + '</p>'
+        + '<div class="lng-bundle-prices">'
+        + '<span class="lng-bundle-price-new">' + bundle.price + '</span>'
+        + '<span class="lng-bundle-price-old">' + bundle.priceOld + '</span>'
+        + '<span class="lng-bundle-saving">Ušetříš ' + bundle.saving + '</span>'
+        + '</div>'
+        + '<a href="' + bundle.url + '" target="_blank">Získat Core Stack →</a>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    // Trust/social bar
+    html += '<div class="lng-social">'
+      + '<div class="lng-social-item">✓ <strong>Vědecky ověřené složení</strong></div>'
+      + '<div class="lng-social-item">✓ <strong>Výroba v ČR</strong></div>'
+      + '<div class="lng-social-item">✓ <strong>Doprava zdarma od 2 000 Kč</strong></div>'
+      + '</div>';
+
+    html += '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">← Začít znovu</button>'
+      + '</div>';
+
+    app.innerHTML = html;
+
+    // Image fallback
+    app.querySelectorAll('.lng-thumb').forEach(function (im) {
+      im.addEventListener('error', function () {
+        this.onerror = null;
+        var L = this.getAttribute('data-fb') || 'L';
+        this.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'>"
+          + "<rect width='80' height='80' rx='12' fill='#E3E7DD'/>"
+          + "<text x='50%' y='55%' font-family='Georgia,serif' font-size='34' fill='#2F6B57' "
+          + "text-anchor='middle' dominant-baseline='middle'>" + L + "</text></svg>");
+      });
+    });
+
+    document.getElementById('lngRestart').addEventListener('click', function () {
+      step = 0; answers = {}; gender = null;
+      progEl.innerHTML = '';
+      renderIntro();
+    });
+  }
+
+})();
+</script>
+</body>
+</html>
