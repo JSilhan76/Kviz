@@ -1129,23 +1129,13 @@
 
     app.innerHTML = html;
 
-    // Cart URL builder
+    // Cart URL builder — redirects through helper page on longelite.com
     function buildCartUrl(products) {
-      var base = 'https://www.longelite.com/action/Order/addMultipleItemsToCart/';
-      var params = [];
-      products.forEach(function (x, i) {
-        if (x.p && x.p.code) {
-          params.push('productCode%5B' + i + '%5D=' + encodeURIComponent(x.p.code));
-          params.push('count%5B' + i + '%5D=1');
-        }
-      });
-      if (params.length === 0) return 'https://www.longelite.com/kosik/';
-      if (params.length === 2) {
-        // Single product — use simpler addItem endpoint
-        var code = (products[0].p || {}).code || '';
-        return 'https://www.longelite.com/action/Order/addItem/?productCode=' + encodeURIComponent(code) + '&count=1';
-      }
-      return base + '?' + params.join('&');
+      var codes = products
+        .filter(function (x) { return x.p && x.p.code; })
+        .map(function (x) { return x.p.code; });
+      if (codes.length === 0) return 'https://www.longelite.com/kosik/';
+      return 'https://www.longelite.com/kviz-kosik/?codes=' + codes.join(',');
     }
 
     document.getElementById('lngCartPrimary').addEventListener('click', function () {
