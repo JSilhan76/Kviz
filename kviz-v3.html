@@ -1167,8 +1167,11 @@
     }
 
     function addItemsToCart(items) {
+      // Okamžitě schovej obě tlačítka a ukaž "Přidávám…"
+      cartActions.innerHTML = '<button type="button" class="lng-btn lng-btn--cart-primary" disabled>Přidávám…</button>';
       if (!isOnShoptet()) {
         window.open(buildHelperUrl(items), '_blank');
+        showCartButton();
         return;
       }
       var validItems = items.filter(function (x) { return x.p && x.p.shoptetId; });
@@ -1176,8 +1179,6 @@
         window.open('/kosik/', '_blank');
         return;
       }
-      // Okamžitě schovej obě tlačítka a ukaž "Přidávám…"
-      cartActions.innerHTML = '<button type="button" class="lng-btn lng-btn--cart-primary" disabled>Přidávám…</button>';
       var i = 0;
       function next() {
         if (i >= validItems.length) {
