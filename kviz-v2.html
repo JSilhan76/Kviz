@@ -722,9 +722,9 @@
       ]
     },
 
-    { type: 'single', cols: 1, eyebrow: 'Krok 2 ze 4',
+    { type: 'multi', cols: 1, eyebrow: 'Krok 2 ze 4',
       q: 'Čeho chceš hlavně dosáhnout?',
-      sub: 'Jeden jasný cíl pomůže najít to nejdůležitější.',
+      sub: 'Vyber jeden nebo více cílů – doladí výslednou nabídku.',
       opts: [
         { e: '⚡', label: 'Mít víc energie a lepší výkon v práci i v životě', tag: 'praci' },
         { e: '😴', label: 'Líp spát a rychleji regenerovat',                  tag: 'spanek' },
@@ -777,6 +777,7 @@
       + '<div class="lng-gender-row">'
       + '<button type="button" class="lng-gender-btn" id="gMale"><span>👨</span><span>Jsem muž</span></button>'
       + '<button type="button" class="lng-gender-btn" id="gFemale"><span>👩</span><span>Jsem žena</span></button>'
+      + '<button type="button" class="lng-gender-btn" id="gOther"><span>🤍</span><span>Nechci uvádět</span></button>'
       + '</div>'
       + '<div class="lng-trust">'
       + '<div class="lng-trust-item"><span>✓</span><span>Výroba v ČR</span></div>'
@@ -788,17 +789,20 @@
 
     var btnMale   = document.getElementById('gMale');
     var btnFemale = document.getElementById('gFemale');
+    var btnOther  = document.getElementById('gOther');
     var btnStart  = document.getElementById('lngStart');
 
     function pickGender(g) {
       gender = g;
       btnMale.classList.toggle('sel',   g === 'male');
       btnFemale.classList.toggle('sel', g === 'female');
+      btnOther.classList.toggle('sel',  g === 'other');
       btnStart.disabled = false;
     }
 
     btnMale.addEventListener('click',   function () { pickGender('male'); });
     btnFemale.addEventListener('click', function () { pickGender('female'); });
+    btnOther.addEventListener('click',  function () { pickGender('other'); });
 
     btnStart.addEventListener('click', function () {
       if (!gender) return;
@@ -828,6 +832,7 @@
   }
 
   // Vrátí volby pro daný krok – pro muže odfiltruje menopauza možnosti
+  // 'female' a 'other' vidí vše
   function getOpts(Q) {
     if (gender === 'male') {
       return Q.opts.filter(function (o) { return o.tag !== 'menopauza'; });
@@ -866,12 +871,16 @@
       ? '<button type="button" class="lng-btn lng-btn--ghost" id="lngBack">← Zpět</button>'
       : '<span></span>';
 
-    var canNext = isMulti || sel.length > 0;
-    var lastQ   = step === total - 1;
-    html += '<button type="button" class="lng-btn lng-btn--primary" id="lngNext"'
-      + (canNext ? '' : ' disabled') + '>'
-      + (lastQ ? 'Zobrazit můj protokol →' : 'Pokračovat')
-      + '</button>';
+    if (isMulti) {
+      // Multi-select: zobraz tlačítko Pokračovat (vždy aktivní)
+      var lastQ = step === total - 1;
+      html += '<button type="button" class="lng-btn lng-btn--primary" id="lngNext">'
+        + (lastQ ? 'Zobrazit můj protokol →' : 'Pokračovat')
+        + '</button>';
+    } else {
+      // Single-select: tlačítko skryto, postup je automatický po kliknutí
+      html += '<span></span>';
+    }
 
     html += '</div></div>';
     app.innerHTML = html;
@@ -945,6 +954,7 @@
       .filter(function (x) {
         if (x.p.isBundle) return false;
         // Pro muže vynech menopause produkt
+        // Menopause Support jen pro ženy (female / other vidí vše)
         if (gender === 'male' && x.p.id === 'menopause') return false;
         return x.sc > 0;
       })
