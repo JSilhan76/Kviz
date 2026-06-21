@@ -1143,7 +1143,7 @@
 
     app.innerHTML = html;
 
-    // ─── Inject checkboxes into each product card ───
+    // ─── Inject toggle buttons into each product card ───
     var allCards = app.querySelectorAll('.lng-card');
     var cardProducts = primary.concat(secondary.filter(function() { return intent !== 'bundle'; }));
     allCards.forEach(function (card, idx) {
@@ -1152,25 +1152,38 @@
       var p = item.p;
       var body = card.querySelector('.lng-card-body');
       if (!body) return;
-      var cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.className = 'lng-product-check';
-      cb.checked = true;
-      cb.setAttribute('data-id', p.shoptetId);
-      cb.setAttribute('data-price', p.shoptetPriceId);
-      cb.style.cssText = 'width:20px;height:20px;cursor:pointer;accent-color:#2F6B57;flex-shrink:0;margin:0;vertical-align:middle;';
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lng-product-check';
+      btn.setAttribute('data-id', p.shoptetId);
+      btn.setAttribute('data-price', p.shoptetPriceId);
+      btn.setAttribute('data-sel', 'true');
+      btn.style.cssText = 'display:inline-flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;margin-bottom:10px;';
+
+      var box = document.createElement('span');
+      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;background:#2F6B57;flex-shrink:0;font-size:13px;color:#fff;';
+      box.textContent = '✓';
+
       var lbl = document.createElement('span');
+      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#4C5750;';
       lbl.textContent = 'Přidat do objednávky';
-      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#4C5750;cursor:pointer;';
-      var label = document.createElement('label');
-      label.style.cssText = 'display:flex;align-items:center;gap:7px;cursor:pointer;margin-bottom:8px;';
-      label.appendChild(cb);
-      label.appendChild(lbl);
-      body.insertBefore(label, body.firstChild);
-      cb.addEventListener('change', function () {
-        card.style.opacity = cb.checked ? '1' : '0.45';
-        lbl.textContent = cb.checked ? 'Přidat do objednávky' : 'Vynechat';
-        lbl.style.color = cb.checked ? '#4C5750' : '#9aa89f';
+
+      btn.appendChild(box);
+      btn.appendChild(lbl);
+      body.insertBefore(btn, body.firstChild);
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var sel = btn.getAttribute('data-sel') === 'true';
+        sel = !sel;
+        btn.setAttribute('data-sel', sel ? 'true' : 'false');
+        box.style.background = sel ? '#2F6B57' : '#D6D9CF';
+        box.textContent = sel ? '✓' : '';
+        lbl.textContent = sel ? 'Přidat do objednávky' : 'Vynechat';
+        lbl.style.color = sel ? '#4C5750' : '#9aa89f';
+        card.style.opacity = sel ? '1' : '0.45';
       });
     });
 
@@ -1246,21 +1259,14 @@
       if (cartBusy) return;
       // Collect checked products
       var selected = [];
-      app.querySelectorAll('.lng-product-check:checked').forEach(function (cb) {
-        selected.push({ p: { shoptetId: +cb.getAttribute('data-id'), shoptetPriceId: +cb.getAttribute('data-price') } });
+      app.querySelectorAll('.lng-product-check[data-sel="true"]').forEach(function (btn) {
+        selected.push({ p: { shoptetId: +btn.getAttribute('data-id'), shoptetPriceId: +btn.getAttribute('data-price') } });
       });
       if (selected.length === 0) return;
       cartBusy = true;
       addItemsToCart(selected);
     });
 
-    // Checkbox toggle — dim unchecked cards
-    app.querySelectorAll('.lng-product-check').forEach(function (cb) {
-      cb.addEventListener('change', function () {
-        var card = cb.closest('.lng-card');
-        if (card) card.classList.toggle('lng-card--unchecked', !cb.checked);
-      });
-    });
 
     // Image fallback
     app.querySelectorAll('.lng-thumb').forEach(function (im) {
