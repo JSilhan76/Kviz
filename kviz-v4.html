@@ -625,17 +625,14 @@
   .lng-btn--cart-all:hover { background: var(--jade); color: #fff; }
 
   /* ─── Product checkbox ─── */
-  .lng-card { position: relative; }
   .lng-card-sel {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     cursor: pointer;
-    z-index: 1;
     user-select: none;
+    margin-left: auto;
+    flex-shrink: 0;
   }
   .lng-card-sel input[type="checkbox"] {
     width: 20px;
@@ -644,16 +641,8 @@
     cursor: pointer;
     flex-shrink: 0;
   }
-  .lng-card-sel-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--jade);
-  }
   .lng-card--unchecked {
     opacity: 0.45;
-  }
-  .lng-card--unchecked .lng-card-sel-label {
-    color: var(--ink-soft);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1096,7 +1085,6 @@
       var p   = x.p;
       var top = idx === 0;
       html += '<div class="lng-card' + (top ? ' lng-card--top' : (idx === 1 ? ' lng-card--2nd' : '')) + '">'
-        + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
         + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
         + '<div class="lng-card-body">'
         + '<div class="lng-badges">'
@@ -1107,6 +1095,7 @@
         + '<p class="lng-reason">' + p.reason + '</p>'
         + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
         + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+        + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
         + '</div></div></div>';
     });
     html += '</div>';
@@ -1118,7 +1107,6 @@
       secondary.forEach(function (x) {
         var p = x.p;
         html += '<div class="lng-card">'
-          + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
           + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
           + '<div class="lng-card-body">'
           + (p.bestseller ? '<div class="lng-badges"><span class="lng-badge lng-badge--green">Bestseller</span></div>' : '')
@@ -1126,6 +1114,7 @@
           + '<p class="lng-reason">' + p.reason + '</p>'
           + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
           + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+          + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
           + '</div></div></div>';
       });
       html += '</div>';
