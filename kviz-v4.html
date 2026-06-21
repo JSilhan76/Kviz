@@ -1143,15 +1143,13 @@
 
     app.innerHTML = html;
 
-    // ─── Inject toggle buttons into each product card ───
+    // ─── Inject toggle buttons into each product card (right edge) ───
     var allCards = app.querySelectorAll('.lng-card');
     var cardProducts = primary.concat(secondary.filter(function() { return intent !== 'bundle'; }));
     allCards.forEach(function (card, idx) {
       var item = cardProducts[idx];
       if (!item) return;
       var p = item.p;
-      var body = card.querySelector('.lng-card-body');
-      if (!body) return;
 
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -1159,19 +1157,19 @@
       btn.setAttribute('data-id', p.shoptetId);
       btn.setAttribute('data-price', p.shoptetPriceId);
       btn.setAttribute('data-sel', 'true');
-      btn.style.cssText = 'display:inline-flex;align-items:center;gap:7px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;margin-bottom:10px;';
+      btn.style.cssText = 'align-self:center;flex-shrink:0;background:none;border:2px solid #2F6B57;border-radius:8px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;';
 
       var box = document.createElement('span');
-      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;background:#2F6B57;flex-shrink:0;font-size:13px;color:#fff;';
+      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:#2F6B57;font-size:12px;color:#fff;flex-shrink:0;';
       box.textContent = '✓';
 
       var lbl = document.createElement('span');
-      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#4C5750;';
-      lbl.textContent = 'Přidat do objednávky';
+      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#2F6B57;white-space:nowrap;';
+      lbl.textContent = 'Vybráno';
 
       btn.appendChild(box);
       btn.appendChild(lbl);
-      body.insertBefore(btn, body.firstChild);
+      card.appendChild(btn);
 
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -1179,10 +1177,11 @@
         var sel = btn.getAttribute('data-sel') === 'true';
         sel = !sel;
         btn.setAttribute('data-sel', sel ? 'true' : 'false');
+        btn.style.borderColor = sel ? '#2F6B57' : '#D6D9CF';
         box.style.background = sel ? '#2F6B57' : '#D6D9CF';
         box.textContent = sel ? '✓' : '';
-        lbl.textContent = sel ? 'Přidat do objednávky' : 'Vynechat';
-        lbl.style.color = sel ? '#4C5750' : '#9aa89f';
+        lbl.textContent = sel ? 'Vybráno' : 'Vynechat';
+        lbl.style.color = sel ? '#2F6B57' : '#9aa89f';
         card.style.opacity = sel ? '1' : '0.45';
       });
     });
