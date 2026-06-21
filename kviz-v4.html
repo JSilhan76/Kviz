@@ -625,23 +625,7 @@
   .lng-btn--cart-all:hover { background: var(--jade); color: #fff; }
 
   /* ─── Product checkbox ─── */
-  .lng-card-sel {
-    align-self: center;
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 4px;
-  }
-  .lng-card-sel input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
-    accent-color: var(--jade);
-    cursor: pointer;
-  }
-  .lng-card--unchecked {
-    opacity: 0.45;
-  }
+  .lng-card--unchecked { opacity: 0.4; }
 
   @media (prefers-reduced-motion: reduce) {
     .lng-stage, .lng-intro { animation: none; }
@@ -1093,9 +1077,7 @@
         + '<p class="lng-reason">' + p.reason + '</p>'
         + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
         + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
-        + '</div></div>'
-        + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
-        + '</div>';
+        + '</div></div></div>';
     });
     html += '</div>';
 
@@ -1113,9 +1095,7 @@
           + '<p class="lng-reason">' + p.reason + '</p>'
           + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
           + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
-          + '</div></div>'
-          + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
-          + '</div>';
+          + '</div></div></div>';
       });
       html += '</div>';
     }
@@ -1162,6 +1142,30 @@
       + '</div>';
 
     app.innerHTML = html;
+
+    // ─── Inject checkboxes into each product card ───
+    var allCards = app.querySelectorAll('.lng-card');
+    var cardProducts = primary.concat(secondary.filter(function() { return intent !== 'bundle'; }));
+    allCards.forEach(function (card, idx) {
+      var item = cardProducts[idx];
+      if (!item) return;
+      var p = item.p;
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'lng-product-check';
+      cb.checked = true;
+      cb.setAttribute('data-id', p.shoptetId);
+      cb.setAttribute('data-price', p.shoptetPriceId);
+      cb.style.cssText = 'width:22px;height:22px;cursor:pointer;flex-shrink:0;accent-color:#2F6B57;';
+      var label = document.createElement('label');
+      label.style.cssText = 'position:absolute;top:12px;right:12px;cursor:pointer;line-height:0;';
+      label.appendChild(cb);
+      card.style.position = 'relative';
+      card.appendChild(label);
+      cb.addEventListener('change', function () {
+        card.style.opacity = cb.checked ? '1' : '0.4';
+      });
+    });
 
     // ─── Add to cart ───
     function isOnShoptet() {
