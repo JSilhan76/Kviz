@@ -1150,27 +1150,33 @@
       var item = cardProducts[idx];
       if (!item) return;
       var p = item.p;
+      var body = card.querySelector('.lng-card-body');
+      if (!body) return;
       var cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.className = 'lng-product-check';
       cb.checked = true;
       cb.setAttribute('data-id', p.shoptetId);
       cb.setAttribute('data-price', p.shoptetPriceId);
-      cb.style.cssText = 'width:22px;height:22px;cursor:pointer;flex-shrink:0;accent-color:#2F6B57;';
+      cb.style.cssText = 'width:20px;height:20px;cursor:pointer;accent-color:#2F6B57;flex-shrink:0;margin:0;vertical-align:middle;';
+      var lbl = document.createElement('span');
+      lbl.textContent = 'Přidat do objednávky';
+      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#4C5750;cursor:pointer;';
       var label = document.createElement('label');
-      label.style.cssText = 'position:absolute;top:12px;right:12px;cursor:pointer;line-height:0;';
+      label.style.cssText = 'display:flex;align-items:center;gap:7px;cursor:pointer;margin-bottom:8px;';
       label.appendChild(cb);
-      card.style.position = 'relative';
-      card.appendChild(label);
+      label.appendChild(lbl);
+      body.insertBefore(label, body.firstChild);
       cb.addEventListener('change', function () {
-        card.style.opacity = cb.checked ? '1' : '0.4';
+        card.style.opacity = cb.checked ? '1' : '0.45';
+        lbl.textContent = cb.checked ? 'Přidat do objednávky' : 'Vynechat';
+        lbl.style.color = cb.checked ? '#4C5750' : '#9aa89f';
       });
     });
 
     // ─── Add to cart ───
     function isOnShoptet() {
-      var h = window.location.hostname;
-      return h === 'www.longelite.com' || h === 'longelite.com';
+      return typeof shoptet !== 'undefined' && typeof shoptet.config !== 'undefined';
     }
 
     function buildHelperUrl(items) {
