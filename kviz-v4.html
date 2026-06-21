@@ -626,20 +626,18 @@
 
   /* ─── Product checkbox ─── */
   .lng-card-sel {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    cursor: pointer;
-    user-select: none;
-    margin-left: auto;
+    align-self: center;
     flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
   }
   .lng-card-sel input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     accent-color: var(--jade);
     cursor: pointer;
-    flex-shrink: 0;
   }
   .lng-card--unchecked {
     opacity: 0.45;
@@ -1095,8 +1093,9 @@
         + '<p class="lng-reason">' + p.reason + '</p>'
         + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
         + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+        + '</div></div>'
         + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
-        + '</div></div></div>';
+        + '</div>';
     });
     html += '</div>';
 
@@ -1114,8 +1113,9 @@
           + '<p class="lng-reason">' + p.reason + '</p>'
           + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
           + '<a class="lng-buy" href="' + p.url + '" target="_blank">Přejít na produkt →</a>'
+          + '</div></div>'
           + '<label class="lng-card-sel"><input type="checkbox" class="lng-product-check" data-id="' + p.shoptetId + '" data-price="' + p.shoptetPriceId + '" checked></label>'
-          + '</div></div></div>';
+          + '</div>';
       });
       html += '</div>';
     }
