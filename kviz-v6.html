@@ -1273,10 +1273,10 @@
     var ranked  = score();
     var intent  = getPurchaseIntent();
 
-    // How many primary products to show depends on intent
-    var primaryCount = intent === 'single' ? 1 : intent === 'bundle' ? 3 : 3;
+    // How many primary products to show depends on intent (jako v4)
+    var primaryCount = intent === 'single' ? 1 : intent === 'bundle' ? 2 : 3;
     var primary = ranked.slice(0, primaryCount);
-    var secondary = ranked.slice(primaryCount, 8); // show up to 8 total products
+    var secondary = intent !== 'single' ? ranked.slice(primaryCount, 5) : ranked.slice(1, 4);
 
     // Build profile summary
     var AGE_LABELS = { young: 'do 30 let', mid: '31–45 let', mature: '46–60 let', senior: '61+ let' };
@@ -1330,8 +1330,8 @@
         + totalPrice.toLocaleString('cs-CZ') + ' Kč</span></p>';
     }
 
-    // Secondary / "also bought" products
-    if (secondary.length > 0) {
+    // Secondary / "also bought" products (bundle intent secondary nevykazuje)
+    if (secondary.length > 0 && intent !== 'bundle') {
       html += '<p class="lng-section-label">Mohlo by se hodit i</p>'
         + '<div class="lng-cards">';
       secondary.forEach(function (x, idx) { html += cardHtml(x, idx, false); });
@@ -1417,7 +1417,7 @@
 
     // ─── Inject toggle buttons into each product card (right edge) ───
     var allCards = app.querySelectorAll('.lng-card');
-    var cardProducts = primary.concat(secondary);
+    var cardProducts = primary.concat(intent !== 'bundle' ? secondary : []);
     allCards.forEach(function (card, idx) {
       var item = cardProducts[idx];
       if (!item) return;
