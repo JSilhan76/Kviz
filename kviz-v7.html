@@ -1283,16 +1283,26 @@
     var bb = document.getElementById('lngBack'); if (bb) bb.addEventListener('click', back);
   }
 
+  function scrollTop() {
+    setTimeout(function() {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      var quiz = document.querySelector('.lng-quiz');
+      if (quiz) quiz.scrollTop = 0;
+    }, 30);
+  }
+
   function nextStep() {
     var Q = QUESTIONS[step], sel = answers[step] || [];
     if (Q.type === 'single' && sel.length === 0) return;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (step < total - 1) { step++; renderQuestion(); }
     else { step = total; renderResult(); }
+    scrollTop();
   }
 
   function back() {
-    if (step > 0) { step--; window.scrollTo({ top: 0, behavior: 'smooth' }); renderQuestion(); }
+    if (step > 0) { step--; renderQuestion(); scrollTop(); }
   }
 
   // ===== RENDER RESULTS =====
@@ -1435,15 +1445,15 @@
       + '</div>';
 
     app.innerHTML = html;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollTop();
 
     // Back to last question
     var backToQ = document.getElementById('lngBackToQ');
     if (backToQ) {
       backToQ.addEventListener('click', function() {
         step = total - 1;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         renderQuestion();
+        scrollTop();
       });
     }
 
