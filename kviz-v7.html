@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Longelite – Osobní protokol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #D8DBD3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
+  }
+
+  .lng-quiz {
+    --paper: #EEF0EA;
+    --ink: #1A2620;
+    --ink-soft: #4C5750;
+    --jade: #2F6B57;
+    --jade-bright: #4FA388;
+    --gold: #A9824A;
+    --gold-light: #F5ECD9;
+    --line: #D6D9CF;
+    --card: #FBFBF7;
+    --shadow: 0 1px 2px rgba(26,38,32,.04), 0 8px 30px rgba(26,38,32,.06);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 740px;
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(20px, 4vw, 40px);
+    border-radius: 22px;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lng-quiz * { box-sizing: border-box; }
+
+  .lng-quiz::before {
+    content: "";
+    position: absolute;
+    top: -160px; right: -120px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(79,163,136,.22), transparent 68%);
+    filter: blur(8px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .lng-quiz > * { position: relative; z-index: 1; }
+
+  /* ─── Header ─── */
+  .lng-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: clamp(22px, 4vw, 34px);
+  }
+
+  .lng-brand {
+    font-family: 'Fraunces';
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--jade);
+  }
+
+  .lng-prog { flex: 1; display: flex; gap: 6px; }
+
+  .lng-seg {
+    height: 4px;
+    flex: 1;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .lng-seg i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--jade-bright);
+    border-radius: 99px;
+    transition: width .45s cubic-bezier(.22,1,.36,1);
+  }
+
+  .lng-seg.done i, .lng-seg.active i { width: 100%; }
+
+  .lng-count {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ─── Intro screen ─── */
+  .lng-intro {
+    text-align: center;
+    padding: 12px 0 4px;
+    animation: lngIn .5s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .lng-intro-icon {
+    font-size: 44px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .lng-intro h1 {
+    font-family: 'Fraunces';
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 500;
+    margin: 0 0 12px;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+  }
+
+  .lng-intro p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+    line-height: 1.6;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Gender picker */
+  .lng-gender-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .lng-gender-btn {
+    flex: 1;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: border-color .18s, background .18s, transform .12s;
+  }
+
+  .lng-gender-btn:hover { border-color: var(--jade-bright); transform: translateY(-1px); }
+  .lng-gender-btn.sel   { border-color: var(--jade); background: #F1F6F2; }
+  .lng-gender-btn span:first-child { font-size: 32px; line-height: 1; }
+
+  .lng-trust {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .lng-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .lng-trust-item span:first-child { color: var(--jade); font-size: 15px; }
+
+  /* ─── Stage animation ─── */
+  .lng-stage { animation: lngIn .5s cubic-bezier(.22,1,.36,1) both; }
+
+  @keyframes lngIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ─── Question text ─── */
+  .lng-eyebrow {
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--jade);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .lng-q {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: clamp(22px, 4vw, 30px);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    letter-spacing: -.01em;
+  }
+
+  .lng-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    line-height: 1.5;
+  }
+
+  /* ─── Options ─── */
+  .lng-opts {
+    display: grid;
+    gap: 9px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lng-opts.single-col { grid-template-columns: 1fr; }
+
+  @media (max-width: 480px) {
+    .lng-opts { grid-template-columns: 1fr; }
+  }
+
+  .lng-opt {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 15px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: border-color .18s, background .18s, transform .12s;
+    line-height: 1.35;
+  }
+
+  .lng-opt:hover { border-color: var(--jade-bright); transform: translateY(-1px); }
+  .lng-opt:focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
+
+  .lng-opt .dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s;
+  }
+
+  .lng-opt .dot::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--jade);
+    transform: scale(0);
+    transition: transform .18s;
+  }
+
+  .lng-opt .check {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--line);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: border-color .18s, background .18s;
+  }
+
+  .lng-opt .check::after {
+    content: "";
+    width: 11px; height: 7px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0) translateY(-1px);
+    transition: transform .18s;
+  }
+
+  .lng-opt.sel { border-color: var(--jade); background: #F1F6F2; }
+  .lng-opt.sel .dot { border-color: var(--jade); }
+  .lng-opt.sel .dot::after { transform: scale(1); }
+  .lng-opt.sel .check { border-color: var(--jade); background: var(--jade); }
+  .lng-opt.sel .check::after { transform: rotate(-45deg) scale(1) translateY(-1px); }
+
+  .lng-opt .emoji { font-size: 18px; line-height: 1; flex: none; }
+
+  /* Highlighted option (bundle intent) */
+  .lng-opt.opt-highlight {
+    border-color: var(--gold);
+    background: var(--gold-light);
+  }
+
+  .lng-opt.opt-highlight.sel {
+    border-color: var(--gold);
+    background: #EDD9AA;
+  }
+
+  .lng-opt.opt-highlight .check {
+    border-color: var(--gold);
+  }
+
+  .lng-opt.opt-highlight.sel .check {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* ─── Navigation ─── */
+  .lng-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+    gap: 12px;
+  }
+
+  .lng-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 99px;
+    padding: 13px 26px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity .18s, transform .12s, background .18s;
+  }
+
+  .lng-btn:active { transform: translateY(1px); }
+  .lng-btn--primary { background: var(--jade); color: #fff; }
+  .lng-btn--primary:hover { background: #27574a; }
+  .lng-btn--primary:disabled { opacity: .35; cursor: not-allowed; }
+  .lng-btn--ghost { background: transparent; color: var(--ink-soft); padding: 13px 8px; }
+  .lng-btn--ghost:hover { color: var(--ink); }
+  .lng-btn--large { font-size: 16px; padding: 15px 34px; }
+
+  /* ─── Results ─── */
+  .lng-result-head {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+
+  .lng-result-head .lng-eyebrow { margin-bottom: 6px; }
+
+  .lng-result-head .lng-q { margin-bottom: 8px; }
+
+  .lng-profile-line {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .lng-cards { display: flex; flex-direction: column; gap: 13px; }
+
+  .lng-card {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    transition: transform .15s;
+  }
+
+  .lng-card:hover { transform: translateY(-1px); }
+
+  .lng-card--top {
+    border-color: var(--jade);
+    box-shadow: 0 10px 34px rgba(47,107,87,.14);
+  }
+
+  .lng-card--2nd { border-color: #b5c4bc; }
+
+  .lng-thumb {
+    width: 80px; height: 80px;
+    flex: none;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #E3E7DD;
+  }
+
+  .lng-card-body { flex: 1; min-width: 0; }
+
+  .lng-badges { display: flex; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+
+  .lng-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 99px;
+  }
+
+  .lng-badge--gold { background: var(--gold-light); color: var(--gold); }
+  .lng-badge--green { background: #DCF0E8; color: var(--jade); }
+  .lng-badge--gray { background: #E8EBE5; color: var(--ink-soft); }
+
+  .lng-pname {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .lng-reason {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+    line-height: 1.45;
+  }
+
+  .lng-buyrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .lng-price { font-weight: 700; font-size: 15px; }
+
+  .lng-buy {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--jade);
+    padding: 9px 20px;
+    border-radius: 99px;
+    transition: background .18s;
+    white-space: nowrap;
+  }
+
+  .lng-buy:hover { background: #27574a; }
+  .lng-card--top .lng-buy { background: var(--gold); }
+  .lng-card--top .lng-buy:hover { background: #8f6c3b; }
+
+  @media (max-width: 440px) {
+    .lng-card { flex-direction: column; align-items: flex-start; }
+    .lng-thumb { width: 100%; height: 120px; }
+  }
+
+  /* ─── Section divider ─── */
+  .lng-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 20px 0 10px;
+  }
+
+  /* ─── Bundle ─── */
+  .lng-bundle {
+    margin-top: 20px;
+    background: linear-gradient(135deg, #1E2D28, #2F6B57);
+    color: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lng-bundle::before {
+    content: "";
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,.05);
+    border-radius: 50%;
+  }
+
+  .lng-bundle-inner {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .lng-bundle-body { flex: 1; min-width: 0; }
+
+  .lng-bundle .lng-badge { margin-bottom: 6px; }
+  .lng-bundle .lng-badge--saving { background: rgba(255,255,255,.15); color: #fff; }
+
+  .lng-bundle h4 {
+    font-family: 'Fraunces';
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 5px;
+    color: #fff;
+  }
+
+  .lng-bundle p {
+    font-size: 13px;
+    margin: 0 0 12px;
+    color: rgba(255,255,255,.78);
+    line-height: 1.45;
+  }
+
+  .lng-bundle-prices {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .lng-bundle-price-new {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .lng-bundle-price-old {
+    font-size: 14px;
+    color: rgba(255,255,255,.55);
+    text-decoration: line-through;
+  }
+
+  .lng-bundle-saving {
+    font-size: 12px;
+    font-weight: 600;
+    background: #4FA388;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  .lng-bundle a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E2D28;
+    background: #fff;
+    padding: 12px 24px;
+    border-radius: 99px;
+    transition: background .18s;
+    white-space: nowrap;
+  }
+
+  .lng-bundle a:hover { background: #EDEAE0; }
+
+  @media (max-width: 500px) {
+    .lng-bundle-inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ─── Social proof bar ─── */
+  .lng-social {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  .lng-social-item {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .lng-social-item strong { color: var(--ink); }
+
+  .lng-restart { display: block; margin: 18px auto 0; }
+
+  /* ─── Cart action buttons ─── */
+  .lng-cart-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 28px 0 8px;
+  }
+  .lng-btn--cart-primary {
+    flex: 1;
+    min-width: 220px;
+    background: var(--jade);
+    color: #fff;
+    font-size: 15px;
+    padding: 15px 20px;
+    border-radius: var(--r);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  .lng-btn--cart-primary:hover { background: #27574a; }
+  .lng-btn--cart-all {
+    flex: 1;
+    min-width: 220px;
+    background: transparent;
+    color: var(--jade);
+    font-size: 15px;
+    padding: 15px 20px;
+    border-radius: var(--r);
+    border: 2px solid var(--jade);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s, color .2s;
+  }
+  .lng-btn--cart-all:hover { background: var(--jade); color: #fff; }
+
+  /* ─── Product checkbox ─── */
+  .lng-card--unchecked { opacity: 0.4; }
+
+  /* ─── Match bar ─── */
+  .lng-match-bar-wrap {
+    margin: 6px 0 10px;
+  }
+  .lng-match-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .lng-match-label strong { font-weight: 700; color: var(--jade); }
+  .lng-match-track {
+    height: 5px;
+    background: var(--line);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .lng-match-fill {
+    height: 100%;
+    background: var(--jade);
+    border-radius: 99px;
+    transition: width .6s ease;
+  }
+
+  /* ─── External supplements ─── */
+  .lng-ext-section { margin-top: 28px; }
+  .lng-ext-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+    border-top: 2px solid var(--line);
+  }
+  .lng-ext-header-left { display: flex; align-items: center; gap: 8px; }
+  .lng-ext-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink); }
+  .lng-ext-count-badge {
+    background: #FFF3E8;
+    color: #C2691A;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .lng-ext-toggle {
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lng-ext-body { }
+  .lng-ext-card {
+    background: #FFFDF8;
+    border: 1px solid #F0E0C0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .lng-ext-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .lng-ext-mimo {
+    background: #FFF3E8;
+    color: #C2691A;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .lng-ext-reason { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
+  .lng-ext-dose {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--jade);
+    background: rgba(47,107,87,.08);
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .lng-ext-dose::before { content: '▶ '; }
+
+  /* ─── Optional badge ─── */
+  .lng-optional-badge {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--gold);
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  /* ─── maxSel hint ─── */
+  .lng-maxsel-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: right;
+    margin-top: -8px;
+    margin-bottom: 4px;
+  }
+  .lng-maxsel-hint.full { color: var(--jade); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lng-stage, .lng-intro { animation: none; }
+    .lng-seg i { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lng-quiz" role="region" aria-label="Longelite osobní protokol">
+  <div class="lng-top">
+    <span class="lng-brand">Longelite</span>
+    <div class="lng-prog" id="lngProg" aria-hidden="true"></div>
+    <span class="lng-count" id="lngCount"></span>
+  </div>
+  <div id="lngApp"></div>
+</div>
+
+<script>
+(function () {
+
+  // ===== PRODUKTY =====
+  var PRODUCTS = [
+    { id: 'glycine', name: 'Pure Glycine', price: '598 Kč', bestseller: true, code: 'LGL',
+      shoptetId: 48, shoptetPriceId: 48,
+      url: 'https://www.longelite.com/pure-glycine/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/48-4_pure-glycine.jpg?69a7eeba',
+      tags: ['spanek', 'regenerace', 'dlouhodobe_zdravi', 'plet', 'sedavy'],
+      reason: 'Čistý glycin zlepší hloubku spánku, podpoří tvorbu kolagenu a ochrání tělo před oxidačním stresem.' },
+
+    { id: 'magnesium', name: 'Magnesium Boost', price: '629 Kč', bestseller: true, code: 'LMAG',
+      shoptetId: 63, shoptetPriceId: 63,
+      url: 'https://www.longelite.com/magnesium-boost/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/63_magnesium-boost.jpg?69a7eced',
+      tags: ['spanek', 'stres', 'energie', 'regenerace', 'dlouhodobe_zdravi', 'sedavy'],
+      reason: 'Hořčík bisglycinát + B6 – klidnější spánek, méně stresu a lepší regenerace nervového systému.' },
+
+    { id: 'fiber', name: 'Fiber Complex', price: '990 Kč', code: 'LFC',
+      shoptetId: 86, shoptetPriceId: 98,
+      url: 'https://www.longelite.com/fiber-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/86_vizu-20boza-20fiber-20complex-20web.png?6a020349',
+      tags: ['traveni', 'metabolismus', 'sedavy'],
+      reason: 'Prémiová vláknina pro klidné trávení, zdravý mikrobiom a stabilní hladinu cukru v krvi.' },
+
+    { id: 'cognitive', name: 'Cognitive Support', price: '1 089 Kč', code: 'LCS',
+      shoptetId: 77, shoptetPriceId: 89,
+      url: 'https://www.longelite.com/longelite-cognitive-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/77_cognitive-final2.png?6a00cc85',
+      tags: ['soustredeni', 'energie', 'prace', 'dlouhodobe_zdravi'],
+      reason: 'Vědecky ověřená kombinace pro lepší paměť, soustředění a mentální výkon – dnes i za 20 let.' },
+
+    { id: 'glucose', name: 'Glucose Control', price: '1 089 Kč', code: 'LGLU',
+      shoptetId: 66, shoptetPriceId: 66,
+      url: 'https://www.longelite.com/glucose-control/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/66-4_glucose-control.jpg?69a7ee89',
+      tags: ['metabolismus', 'energie', 'sedavy', 'dlouhodobe_zdravi'],
+      reason: 'Berberin + skořice + chrom pro stabilní krevní cukr a vyrovnanou energii bez odpoledních propadů.' },
+
+    { id: 'skin', name: 'Skin Protect & Repair', price: '1 150 Kč', code: 'LSKN',
+      shoptetId: 57, shoptetPriceId: 57,
+      url: 'https://www.longelite.com/skin-protect-repair/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/57-4_skin-protect-repair.jpg?69a7eece',
+      tags: ['plet', 'dlouhodobe_zdravi'],
+      reason: 'Astaxanthin + vitamin C chrání pleť zevnitř, zpomalují viditelné stárnutí a podporují tvorbu kolagenu.' },
+
+    { id: 'sleep', name: 'Sleep Complex', price: '1 169 Kč', bestseller: true, code: 'LSLP',
+      shoptetId: 54, shoptetPriceId: 54,
+      url: 'https://www.longelite.com/sleep-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/54-4_sleep-complex.jpg?69a7f0f2',
+      tags: ['spanek', 'stres', 'regenerace'],
+      reason: 'Usneš rychleji, prospíš hlouběji a vstaneš odpočatý/á – bez návyku a bez ráního obluzení.' },
+
+    { id: 'menopause', name: 'Menopause Support', price: '1 249 Kč', code: 'LMS',
+      shoptetId: 80, shoptetPriceId: 92,
+      url: 'https://www.longelite.com/menopause-support-80-capsules/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/80_menopause.png?6a00c066',
+      tags: ['menopauza', 'spanek', 'stres', 'dlouhodobe_zdravi'],
+      reason: 'Bez hormonů zklidní návaly, podpoří spánek a náladu – navrženo speciálně pro perimenopauzu a menopauzu.' },
+
+    { id: 'matcha', name: 'Matcha Protein', price: '1 090 Kč', group: 'matcha', code: 'LMP',
+      shoptetId: 92, shoptetPriceId: 104,
+      url: 'https://www.longelite.com/matcha-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/92_vizu-20doypack-20matcha-20protein-20800g-20web.png?6a1421b9',
+      tags: ['protein', 'regenerace', 'energie', 'soustredeni', 'sport', 'prace'],
+      reason: 'Syrovátkový protein s japonskou matchou – regenerace svalů a jemná mentální energie z L-theaninu.' },
+
+    { id: 'matchacoco', name: 'Matcha–Coco Protein', price: '1 190 Kč', group: 'matcha', code: 'LMCP',
+      shoptetId: 95, shoptetPriceId: 107,
+      url: 'https://www.longelite.com/matcha-coco-protein/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/95_vizu-20doypack-20matcha-e2-80-93coco-20protein-20800g-20web.png?6a1462b8',
+      tags: ['protein', 'regenerace', 'energie', 'soustredeni', 'sport'],
+      reason: 'Krémová matcha-kokosová varianta – regenerace, budování svalů a soustředění v jednom.' },
+
+    { id: 'postworkout', name: 'Post Workout Complex', price: '1 440 Kč', group: 'postworkout', code: 'LPW',
+      shoptetId: 60, shoptetPriceId: 60,
+      url: 'https://www.longelite.com/post-workout-complex/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/60_vizu-20doypack-20post-20workout-20complex-201200-20g-20skorice-20web.png?6a01f9c2',
+      tags: ['regenerace', 'sport', 'energie', 'dlouhodobe_zdravi'],
+      reason: 'Protein + kreatin + kolagen – komplexní podpora regenerace, svalové hmoty a zdraví kloubů.' },
+
+    { id: 'postworkoutv', name: 'Post Workout Complex – vanilka', price: '1 490 Kč', group: 'postworkout', code: 'LPWCV',
+      shoptetId: 83, shoptetPriceId: 95,
+      url: 'https://www.longelite.com/post-workout-complex-vanilka/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/83_vizu-20doypack-20post-20workout-20complex-201200-20g-20vanilka-20web.png?6a01f664',
+      tags: ['regenerace', 'sport', 'energie'],
+      reason: 'Protein + kreatin + kolagen ve variante vanilka – maximální regenerace a svalový růst.' },
+
+    { id: 'longevity', name: 'Longevity Essentials', price: '1 890 Kč', code: 'LESS',
+      shoptetId: 51, shoptetPriceId: 51,
+      url: 'https://www.longelite.com/longevity-essentials/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/51_longevity-essentials.jpg?69a7eca5',
+      tags: ['dlouhodobe_zdravi', 'regenerace', 'energie', 'prace'],
+      reason: 'Komplexní základ dlouhověkosti – mitochondrie, imunita, hormony, cévy a regenerace v jednom.' },
+
+    { id: 'corestack', name: 'Longelite Core Stack', price: '5 990 Kč', code: 'LCOST2',
+      shoptetId: 89, shoptetPriceId: 101,
+      priceOld: '7 965 Kč', saving: '1 975 Kč', group: 'corestack', isBundle: true,
+      url: 'https://www.longelite.com/longelite-core-stack-2/',
+      img: 'https://cdn.myshoptet.com/usr/www.longelite.com/user/shop/big/89_longelite-produktove-fotky-square-a-web.jpg?6a1414df',
+      tags: ['dlouhodobe_zdravi'],
+      reason: 'Kompletní měsíční protokol v jednom balení – spánek, energie, metabolismus, imunita a regenerace bez přemýšlení.' }
+  ];
+
+  // ===== OTÁZKY (6 kroků) =====
+  var QUESTIONS = [
+    // Q0: Věk (single)
+    { type: 'single', cols: 1, eyebrow: 'VĚKOVÁ SKUPINA',
+      q: 'Kolik je vám let?',
+      sub: 'Věk ovlivní výběr a pořadí doporučených produktů.',
+      opts: [
+        { label: 'Méně než 30 let', ageTag: 'age_under30', tags: {} },
+        { label: '30–39 let',       ageTag: 'age_30_39',   tags: {} },
+        { label: '40–49 let',       ageTag: 'age_40_49',   tags: {} },
+        { label: '50–59 let',       ageTag: 'age_50_59',   tags: {} },
+        { label: '60+ let',         ageTag: 'age_60_plus',  tags: {} }
+      ]
+    },
+
+    // Q1: Pohlaví (single)
+    { type: 'single', cols: 1, eyebrow: 'POHLAVÍ',
+      q: 'Jaké je vaše pohlaví?',
+      sub: 'Některé produkty jsou navrženy specificky pro ženy.',
+      opts: [
+        { label: 'Žena', gVal: 'female', tags: {} },
+        { label: 'Muž',  gVal: 'male',   tags: {} }
+      ]
+    },
+
+    // Q2: Co vás trápí (multi, unlimited)
+    { type: 'multi', cols: 1, eyebrow: 'CO VÁS TRÁPÍ',
+      q: 'Co vás aktuálně nejvíce trápí?',
+      sub: 'Vyberte vše, co se vás týká.',
+      opts: [
+        { label: 'Horší spánek, časté buzení, obtížné usínání',      tags: { spanek: 4, stres: 2 } },
+        { label: 'Stres, napětí, horší psychická odolnost',          tags: { stres: 4, spanek: 2 } },
+        { label: 'Únava, kolísání energie během dne',                tags: { energie: 4, metabolismus: 2 } },
+        { label: 'Horší soustředění, mentální výkon, práce hlavou',  tags: { soustredeni: 4, prace: 3, energie: 2 } },
+        { label: 'Trávení, nadýmání, nepravidelná stolice',          tags: { traveni: 4, metabolismus: 2 } },
+        { label: 'Chutě na sladké, výkyvy energie po jídle',        tags: { metabolismus: 4, energie: 2, sedavy: 1 } },
+        { label: 'Regenerace po sportu nebo fyzické zátěži',         tags: { regenerace: 4, sport: 3, energie: 1 } },
+        { label: 'Sportovní výkon',                                   tags: { sport: 4, regenerace: 2, energie: 1 } },
+        { label: 'Pleť, UV zátěž, ochrana kůže',                    tags: { plet: 4, dlouhodobe_zdravi: 1 } },
+        { label: 'Klouby, šlachy nebo pohybový aparát',              tags: { pohybovy_aparat: 4, regenerace: 2, zanet: 2 } },
+        { label: 'Jsem v perimenopauze nebo menopauze',              tags: { menopauza: 5, spanek: 2, stres: 2 }, menopausaOnly: true },
+        { label: 'Chci podpořit dlouhodobé zdraví a prevenci',       tags: { dlouhodobe_zdravi: 4, regenerace: 1, energie: 1 }, longTermHealth: true }
+      ]
+    },
+
+    // Q3: Co chcete podpořit (multi, unlimited)
+    { type: 'multi', cols: 1, eyebrow: 'CO CHCETE PODPOŘIT',
+      q: 'Co chcete podpořit?',
+      sub: 'Vyberte vše, co vás zajímá.',
+      opts: [
+        { label: 'Lépe spát a večer se zklidnit',              tags: { spanek: 3, stres: 2 } },
+        { label: 'Zvládat stres a mentální zátěž',             tags: { stres: 3, soustredeni: 2 } },
+        { label: 'Mít stabilnější energii během dne',          tags: { energie: 3, metabolismus: 2 } },
+        { label: 'Podpořit mozek, paměť a soustředění',       tags: { soustredeni: 3, prace: 3, energie: 1 } },
+        { label: 'Podpořit metabolické zdraví',                tags: { metabolismus: 3, sedavy: 1 } },
+        { label: 'Zlepšit trávení a příjem vlákniny',         tags: { traveni: 3, metabolismus: 1 } },
+        { label: 'Lépe regenerovat po sportu',                 tags: { regenerace: 3, sport: 3 } },
+        { label: 'Doplnit kvalitní protein',                   tags: { protein: 3, sport: 2, regenerace: 2 } },
+        { label: 'Podpořit vzhled a ochranu pleti',           tags: { plet: 3, dlouhodobe_zdravi: 1 } },
+        { label: 'Pohybový aparát a klouby',                   tags: { pohybovy_aparat: 3, regenerace: 1, zanet: 1 } },
+        { label: 'Podpořit dlouhodobé zdraví',                 tags: { dlouhodobe_zdravi: 3, energie: 1, regenerace: 1 }, longTermHealth: true }
+      ]
+    },
+
+    // Q4: Životní styl (single)
+    { type: 'single', cols: 1, eyebrow: 'ŽIVOTNÍ STYL',
+      q: 'Který popis vás nejlépe vystihuje?',
+      sub: '',
+      opts: [
+        { label: 'Hodně sedím, pracuji hlavně hlavou',  tags: { sedavy: 2, prace: 2, soustredeni: 1, metabolismus: 1 } },
+        { label: 'Psychicky náročná práce',              tags: { stres: 2, prace: 2, soustredeni: 1, spanek: 1 } },
+        { label: 'Pravidelně sportuji',                  tags: { sport: 2, regenerace: 2, protein: 1 } },
+        { label: 'Vrcholově sportuji',                   tags: { sport: 4, regenerace: 3, protein: 2 } },
+        { label: 'Aktivní senior',                       tags: { dlouhodobe_zdravi: 2, regenerace: 1, energie: 1 } }
+      ]
+    },
+
+    // Q5: Rozpočet (single)
+    { type: 'single', cols: 1, eyebrow: 'MĚSÍČNÍ ROZPOČET',
+      q: 'Jaký je váš měsíční rozpočet na doplňky stravy?',
+      sub: 'Přizpůsobíme počet doporučených produktů.',
+      opts: [
+        { label: 'do 1 000 Kč',    budgetVal: 'low1',     maxProducts: 1 },
+        { label: '1 000–2 000 Kč', budgetVal: 'low2',     maxProducts: 2 },
+        { label: '2 000–4 000 Kč', budgetVal: 'mid',      maxProducts: 3 },
+        { label: '4 000–6 000 Kč', budgetVal: 'high',     maxProducts: 4 },
+        { label: 'Bez omezení',    budgetVal: 'unlimited', maxProducts: 99 }
+      ]
+    }
+  ];
+
+  // ===== STAV =====
+  var step = 0, answers = {}, total = QUESTIONS.length;
+  var gender  = null;   // 'male' | 'female' — derived from Q1
+  var ageTag  = null;   // 'age_under30' | 'age_30_39' | 'age_40_49' | 'age_50_59' | 'age_60_plus' — derived from Q0
+  var budget  = null;   // maxProducts number — derived from Q5
+  var app     = document.getElementById('lngApp');
+  var progEl  = document.getElementById('lngProg');
+  var countEl = document.getElementById('lngCount');
+
+  // Intro screen
+  renderIntro();
+
+  function renderIntro() {
+    progEl.innerHTML = '';
+    countEl.textContent = '';
+    step = 0; answers = {}; gender = null; ageTag = null; budget = null;
+    app.innerHTML = '<div class="lng-intro">'
+      + '<span class="lng-intro-icon">🧬</span>'
+      + '<h1>Najděte svůj osobní protokol</h1>'
+      + '<p>6 otázek · přibližně 60 sekund · vědecky podložené složení přesně podle vašich potřeb.</p>'
+      + '<div class="lng-trust">'
+      + '<div class="lng-trust-item"><span>✓</span><span>Výroba v ČR</span></div>'
+      + '<div class="lng-trust-item"><span>✓</span><span>Vědecky ověřené složení</span></div>'
+      + '<div class="lng-trust-item"><span>✓</span><span>Doporučení vč. chystaných produktů</span></div>'
+      + '</div>'
+      + '<button type="button" class="lng-btn lng-btn--primary lng-btn--large" id="lngStart">Spustit dotazník →</button>'
+      + '</div>';
+
+    document.getElementById('lngStart').addEventListener('click', function () {
+      initProgress();
+      renderQuestion();
+    });
+  }
+
+  function initProgress() {
+    progEl.innerHTML = '';
+    for (var i = 0; i < total; i++) {
+      progEl.insertAdjacentHTML('beforeend', '<span class="lng-seg"><i></i></span>');
+    }
+  }
+
+  var segs;
+  function getSegs() { segs = progEl.querySelectorAll('.lng-seg'); }
+
+  function updateProgress() {
+    getSegs();
+    segs.forEach(function (s, idx) {
+      s.classList.remove('active', 'done');
+      if (idx < step) s.classList.add('done');
+      else if (idx === step && step < total) s.classList.add('active');
+    });
+    countEl.textContent = step < total ? (step + 1) + ' / ' + total : '';
+  }
+
+  // Vrátí volby pro daný krok – filtruje menopauza možnosti
+  function getOpts(Q) {
+    return Q.opts.filter(function(o) {
+      if (o.menopausaOnly) {
+        return gender === 'female' && ageTag !== 'age_under30' && ageTag !== null;
+      }
+      return true;
+    });
+  }
+
+  // ===== TAG MULTIPLIERS =====
+  var TAG_MULT = {
+    menopauza:        1.5,
+    spanek:           1.3,
+    traveni:          1.3,
+    metabolismus:     1.3,
+    plet:             1.25,
+    stres:            1.2,
+    soustredeni:      1.2,
+    sport:            1.15,
+    protein:          1.15,
+    pohybovy_aparat:  1.2,
+    zanet:            1.1,
+    regenerace:       0.9,
+    energie:          0.8,
+    prace:            0.7,
+    sedavy:           0.6,
+    dlouhodobe_zdravi: 0.6
+  };
+
+  function computeTagScores() {
+    var raw = {};
+    // Q2 (pain), Q3 (goals), Q4 (lifestyle)
+    [2, 3, 4].forEach(function(qi) {
+      var Q    = QUESTIONS[qi];
+      var opts = getOpts(Q);
+      var sel  = answers[qi] || [];
+      sel.forEach(function(oi) {
+        var opt = opts[oi];
+        if (!opt || !opt.tags) return;
+        for (var tag in opt.tags) {
+          if (opt.tags.hasOwnProperty(tag)) {
+            raw[tag] = (raw[tag] || 0) + opt.tags[tag];
+          }
+        }
+      });
+    });
+    // Apply multipliers
+    var s = {};
+    for (var tag in raw) {
+      if (raw.hasOwnProperty(tag)) {
+        s[tag] = raw[tag] * (TAG_MULT[tag] || 1.0);
+      }
+    }
+    return s;
+  }
+
+  function passesFilter(p, s) {
+    if (p.id === 'menopause') {
+      return gender === 'female'
+        && ageTag !== 'age_under30'
+        && (s['menopauza'] || 0) > 0;
+    }
+    if (p.id === 'sleep') {
+      return (s['spanek'] || 0) > 0 || (s['stres'] || 0) > 0;
+    }
+    if (p.id === 'glucose') {
+      return (s['metabolismus'] || 0) > 0;
+    }
+    if (p.id === 'postworkout' || p.id === 'postworkoutv') {
+      return (s['sport'] || 0) > 0 || (s['regenerace'] || 0) > 0;
+    }
+    if (p.id === 'matcha' || p.id === 'matchacoco') {
+      return (s['protein'] || 0) > 0 || (s['sport'] || 0) > 0 || (s['regenerace'] || 0) > 0;
+    }
+    return true;
+  }
+
+  function getPurchaseIntent() {
+    if (budget === 99) return 'bundle';
+    if (budget === 1)  return 'single';
+    return 'multi';
+  }
+
+  function getExternalRecs(s) {
+    var recs = [];
+    var isAgeOver40  = (ageTag === 'age_40_49' || ageTag === 'age_50_59' || ageTag === 'age_60_plus');
+    var isAgeOver50  = (ageTag === 'age_50_59' || ageTag === 'age_60_plus');
+    var isAgeOver60  = (ageTag === 'age_60_plus');
+    var totalSel     = (answers[2] || []).length + (answers[3] || []).length;
+
+    // Longelite Science-Based Multivitamin (coming soon)
+    if (isAgeOver50 || (s['dlouhodobe_zdravi'] || 0) > 0 || totalSel >= 3) {
+      recs.push({
+        name: 'Longelite Science-Based Multivitamin',
+        comingSoon: true,
+        reason: 'Komplexní základ pro každodenní mikronutrici – vitamíny, minerály, adaptogeny. V přípravě.',
+        dose: 'Brzy dostupné na longelite.com'
+      });
+    }
+
+    // Longelite Pure Creatine Monohydrate (coming soon)
+    if ((s['sport'] || 0) > 0 || (s['regenerace'] || 0) > 0 || (s['energie'] || 0) > 5 || isAgeOver50) {
+      recs.push({
+        name: 'Longelite Pure Creatine Monohydrate',
+        comingSoon: true,
+        reason: 'Kreatin pro sílu, výkon, regeneraci i kognitivní funkce. Vhodný i ve vyšším věku.',
+        dose: 'Brzy dostupné na longelite.com'
+      });
+    }
+
+    // Longelite Pure Krill Omega-3 (coming soon)
+    if ((s['dlouhodobe_zdravi'] || 0) > 0 || (s['soustredeni'] || 0) > 0 || isAgeOver40) {
+      recs.push({
+        name: 'Longelite Pure Krill Omega-3',
+        comingSoon: true,
+        reason: 'Krilový olej s fosfolipidy – lepší vstřebatelnost než rybí olej. Srdce, mozek, záněty.',
+        dose: 'Brzy dostupné na longelite.com'
+      });
+    }
+
+    // Kurkumin (externě, ne Longelite)
+    if ((s['pohybovy_aparat'] || 0) > 0 || (s['sport'] || 0) > 6 || (s['regenerace'] || 0) > 5 || isAgeOver60) {
+      recs.push({
+        name: 'Kurkumin (BCM-95 nebo fytosomový)',
+        comingSoon: false,
+        external: true,
+        reason: 'Silný přírodní protizánětlivý účinek. Vhodný při bolestech kloubů, sportovní regeneraci.',
+        dose: '500–1000 mg standardizovaného extraktu / den, k jídlu s tukem'
+      });
+    }
+
+    return recs;
+  }
+
+  function score() {
+    var s = computeTagScores();
+
+    // Longevity bonus
+    var totalSel = (answers[2] || []).length + (answers[3] || []).length;
+    var lthSelected = [0, 1].some(function(qi) {
+      var qIdx = qi === 0 ? 2 : 3;
+      var opts  = getOpts(QUESTIONS[qIdx]);
+      var selArr = answers[qIdx] || [];
+      return selArr.some(function(oi) { return opts[oi] && opts[oi].longTermHealth; });
+    });
+    var longevityMult = (totalSel >= 3 || lthSelected) ? 1.25 : 1.15;
+
+    var ranked = PRODUCTS.map(function(p) {
+      if (p.isBundle) return { p: p, sc: -1 };
+      if (!passesFilter(p, s)) return { p: p, sc: -1 };
+      var sc = 0;
+      p.tags.forEach(function(t) { if (s[t]) sc += s[t]; });
+      if (p.id === 'longevity') sc *= longevityMult;
+      return { p: p, sc: sc };
+    }).filter(function(x) { return !x.p.isBundle && x.sc > 0; })
+      .sort(function(a, b) { return b.sc - a.sc; });
+
+    // Deduplicate groups
+    var seen = {}, out = [];
+    ranked.forEach(function(x) {
+      var g = x.p.group;
+      if (g) { if (seen[g]) return; seen[g] = 1; }
+      out.push(x);
+    });
+
+    // Fallback
+    if (out.length === 0) {
+      out = [
+        { p: PRODUCTS.filter(function(p){ return p.id === 'magnesium'; })[0], sc: 0 },
+        { p: PRODUCTS.filter(function(p){ return p.id === 'glycine'; })[0], sc: 0 }
+      ];
+    }
+
+    // Shoda %
+    var maxSc = out[0] ? out[0].sc || 1 : 1;
+    out.forEach(function(x) {
+      x.shoda = x.sc > 0 ? Math.max(45, Math.round(45 + (x.sc / maxSc) * 54)) : 45;
+    });
+
+    // Budget limit
+    var maxP = budget || 3;
+    out = out.slice(0, maxP);
+
+    // External/coming-soon recommendations
+    out._extSupps = getExternalRecs(s);
+
+    return out;
+  }
+
+  // Spočítej doporučenou celkovou cenu
+  function parsePrice(str) {
+    var n = parseInt(str.replace(/\s/g, '').replace('Kč',''), 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  // ===== RENDER QUESTION =====
+  function renderQuestion() {
+    var Q       = QUESTIONS[step];
+    var opts    = getOpts(Q);
+    var sel     = answers[step] || [];
+    var isMulti = Q.type === 'multi';
+    var lastQ   = step === total - 1;
+
+    var html = '<div class="lng-stage">'
+      + '<p class="lng-eyebrow">' + Q.eyebrow + ' · ' + (step + 1) + ' / ' + total + '</p>'
+      + '<h2 class="lng-q">' + Q.q + '</h2>'
+      + '<p class="lng-sub">' + (Q.sub || '') + '</p>';
+
+    html += '<div class="lng-opts single-col" role="group">';
+
+    opts.forEach(function (o, idx) {
+      var on        = sel.indexOf(idx) > -1;
+      var indicator = isMulti ? '<span class="check"></span>' : '<span class="dot"></span>';
+      html += '<button type="button" class="lng-opt' + (on ? ' sel' : '') + '"'
+        + ' data-idx="' + idx + '" aria-pressed="' + on + '">'
+        + indicator
+        + '<span>' + o.label + '</span>'
+        + '</button>';
+    });
+
+    html += '</div><div class="lng-nav">';
+    html += step > 0
+      ? '<button type="button" class="lng-btn lng-btn--ghost" id="lngBack">← Zpět</button>'
+      : '<span></span>';
+
+    if (isMulti || lastQ) {
+      var btnLabel = lastQ ? 'Zobrazit doporučení →' : 'Pokračovat →';
+      html += '<button type="button" class="lng-btn lng-btn--primary" id="lngNext">'
+        + btnLabel + '</button>';
+    } else {
+      html += '<span></span>';
+    }
+
+    html += '</div></div>';
+    app.innerHTML = html;
+    updateProgress();
+
+    app.querySelectorAll('.lng-opt').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = +btn.getAttribute('data-idx');
+        var cur = answers[step] ? answers[step].slice() : [];
+        if (!isMulti) {
+          answers[step] = [idx];
+          // Derive state
+          if (step === 0) { ageTag = opts[idx].ageTag || null; }
+          if (step === 1) { gender = opts[idx].gVal   || null; }
+          if (step === 5) { budget = opts[idx].maxProducts || 3; }
+          if (!lastQ) setTimeout(nextStep, 280);
+          else renderQuestion();
+        } else {
+          var p = cur.indexOf(idx);
+          if (p > -1) { cur.splice(p, 1); }
+          else { cur.push(idx); }
+          answers[step] = cur;
+          renderQuestion();
+        }
+      });
+    });
+
+    var nb = document.getElementById('lngNext'); if (nb) nb.addEventListener('click', nextStep);
+    var bb = document.getElementById('lngBack'); if (bb) bb.addEventListener('click', back);
+  }
+
+  function nextStep() {
+    var Q = QUESTIONS[step], sel = answers[step] || [];
+    if (Q.type === 'single' && sel.length === 0) return;
+    if (step < total - 1) { step++; renderQuestion(); }
+    else { step = total; renderResult(); }
+  }
+
+  function back() {
+    if (step > 0) { step--; renderQuestion(); }
+  }
+
+  // ===== RENDER RESULTS =====
+  function renderResult() {
+    updateProgress();
+    getSegs();
+    segs.forEach(function (s) { s.classList.add('done'); });
+
+    var ranked  = score();
+    var intent  = getPurchaseIntent();
+
+    // All products are primary (budget limit applied in score())
+    var primary   = ranked;
+    var secondary = [];
+
+    // Build profile summary
+    var AGE_LABELS = {
+      age_under30: 'do 30 let', age_30_39: '30–39 let',
+      age_40_49: '40–49 let', age_50_59: '50–59 let', age_60_plus: '60+ let'
+    };
+    var q2Opts   = getOpts(QUESTIONS[2]);
+    var painSel  = (answers[2] || []).map(function(i) { return q2Opts[i] ? q2Opts[i].label : ''; }).filter(Boolean);
+    var profileParts = [];
+    if (ageTag) profileParts.push(AGE_LABELS[ageTag] || ageTag);
+    if (painSel.length > 0) profileParts.push(painSel.slice(0, 2).join(', ').toLowerCase());
+    var profileLine = profileParts.length > 0 ? 'Profil: ' + profileParts.join(' · ') : 'Doporučení připraveno.';
+
+    var html = '<div class="lng-stage">'
+      + '<div class="lng-result-head">'
+      + '<p class="lng-eyebrow">Doporučení Longelite</p>'
+      + '<h2 class="lng-q">Protokol na míru</h2>'
+      + '<p class="lng-profile-line">' + profileLine + '</p>'
+      + '</div>';
+
+    // Helper: render product card with shoda bar
+    function cardHtml(x, idx, isPrimary) {
+      var p   = x.p;
+      var top = isPrimary && idx === 0;
+      var cls = top ? ' lng-card--top' : (isPrimary && idx === 1 ? ' lng-card--2nd' : '');
+      return '<div class="lng-card' + cls + '">'
+        + '<img class="lng-thumb" src="' + p.img + '" alt="' + p.name + '" loading="lazy" referrerpolicy="no-referrer" data-fb="' + p.name.charAt(0) + '">'
+        + '<div class="lng-card-body">'
+        + '<div class="lng-badges">'
+        + (top ? '<span class="lng-badge lng-badge--gold">★ Nejlepší shoda</span>' : '')
+        + (p.bestseller ? '<span class="lng-badge lng-badge--green">Bestseller</span>' : '')
+        + '</div>'
+        + '<h3 class="lng-pname">' + p.name + '</h3>'
+        + '<div class="lng-match-bar-wrap">'
+        + '<div class="lng-match-label"><span>Shoda s profilem</span><strong>' + (x.shoda || 70) + '%</strong></div>'
+        + '<div class="lng-match-track"><div class="lng-match-fill" style="width:' + (x.shoda || 70) + '%"></div></div>'
+        + '</div>'
+        + '<p class="lng-reason">' + p.reason + '</p>'
+        + '<div class="lng-buyrow"><span class="lng-price">' + p.price + '</span>'
+        + '<a class="lng-buy" href="' + p.url + '" target="_blank">Otevřít produkt →</a>'
+        + '</div></div></div>';
+    }
+
+    // Primary products
+    html += '<div class="lng-cards">';
+    primary.forEach(function (x, idx) { html += cardHtml(x, idx, true); });
+    html += '</div>';
+
+    // Recommended total price
+    var totalPrice = primary.reduce(function(sum, x) { return sum + parsePrice(x.p.price); }, 0);
+    if (totalPrice > 0) {
+      html += '<p style="text-align:right;font-size:13px;font-weight:700;color:var(--ink);margin:4px 0 16px;">'
+        + 'Doporučený nákup <span style="font-size:16px;">'
+        + totalPrice.toLocaleString('cs-CZ') + ' Kč</span></p>';
+    }
+
+    // Bundle – zobrazit pokud budget === 99 (unlimited) nebo age 50+
+    var showBundle = (budget === 99) || (ageTag === 'age_50_59' || ageTag === 'age_60_plus');
+    var bundle = null;
+    PRODUCTS.forEach(function (p) { if (p.isBundle) bundle = p; });
+    if (bundle && showBundle) {
+      var bigSave = intent === 'bundle';
+      html += '<div class="lng-bundle">'
+        + '<div class="lng-bundle-inner">'
+        + '<div class="lng-bundle-body">'
+        + '<div class="lng-badges">'
+        + '<span class="lng-badge lng-badge--saving">' + (bigSave ? '🚀 Doporučeno pro vás' : 'Vše v jednom') + '</span>'
+        + '</div>'
+        + '<h4>' + bundle.name + '</h4>'
+        + '<p>' + bundle.reason + '</p>'
+        + '<div class="lng-bundle-prices">'
+        + '<span class="lng-bundle-price-new">' + bundle.price + '</span>'
+        + '<span class="lng-bundle-price-old">' + bundle.priceOld + '</span>'
+        + '<span class="lng-bundle-saving">Ušetříte ' + bundle.saving + '</span>'
+        + '</div>'
+        + '<a href="' + bundle.url + '" target="_blank">Získat Core Stack →</a>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    // External/coming-soon supps section
+    var extSupps = ranked._extSupps || [];
+    if (extSupps.length > 0) {
+      html += '<div class="lng-ext-section" id="lngExtSection">'
+        + '<div class="lng-ext-header">'
+        + '<div class="lng-ext-header-left">'
+        + '<h3>Doplnit do protokolu</h3>'
+        + '<span class="lng-ext-count-badge">' + extSupps.length + ' PRODUKTY</span>'
+        + '</div>'
+        + '<button type="button" class="lng-ext-toggle" id="lngExtToggle">−</button>'
+        + '</div>'
+        + '<p style="font-size:13px;color:var(--ink-soft);margin:0 0 12px;">Chystané produkty Longelite a externí suplementy, které dobře doplní váš protokol.</p>'
+        + '<div class="lng-ext-body" id="lngExtBody">';
+      extSupps.forEach(function(e) {
+        var badgeHtml;
+        if (e.comingSoon) {
+          badgeHtml = '<span class="lng-ext-mimo" style="background:#F5ECD9;color:#A9824A;">BRZY DOSTUPNÉ</span>';
+        } else {
+          badgeHtml = '<span class="lng-ext-mimo">DOPORUČUJEME</span>';
+        }
+        html += '<div class="lng-ext-card">'
+          + '<div class="lng-ext-name"><span>' + e.name + '</span>' + badgeHtml + '</div>'
+          + '<p class="lng-ext-reason">' + e.reason + '</p>'
+          + '<span class="lng-ext-dose">' + e.dose + '</span>'
+          + '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // Trust/social bar
+    html += '<div class="lng-social">'
+      + '<div class="lng-social-item">✓ <strong>Vědecky ověřené složení</strong></div>'
+      + '<div class="lng-social-item">✓ <strong>Výroba v ČR</strong></div>'
+      + '<div class="lng-social-item">✓ <strong>Doprava zdarma od 2 000 Kč</strong></div>'
+      + '</div>';
+
+    html += '<div class="lng-cart-actions" id="lngCartActions">'
+      + '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngShopPrimary">🛒 Vložit vybrané do košíku</button>'
+      + '</div>';
+
+    html += '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">← Začít znovu</button>'
+      + '</div>';
+
+    app.innerHTML = html;
+
+    // External supps toggle
+    var extToggle = document.getElementById('lngExtToggle');
+    var extBody   = document.getElementById('lngExtBody');
+    if (extToggle && extBody) {
+      extToggle.addEventListener('click', function() {
+        var open = extBody.style.display !== 'none';
+        extBody.style.display = open ? 'none' : '';
+        extToggle.textContent = open ? '+' : '−';
+      });
+    }
+
+    // Inject toggle buttons into each product card
+    var allCards = app.querySelectorAll('.lng-card');
+    allCards.forEach(function (card, idx) {
+      var item = primary[idx];
+      if (!item) return;
+      var p = item.p;
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lng-product-check';
+      btn.setAttribute('data-id', p.shoptetId);
+      btn.setAttribute('data-price', p.shoptetPriceId);
+      btn.setAttribute('data-sel', 'true');
+      btn.style.cssText = 'align-self:center;flex-shrink:0;background:none;border:2px solid #2F6B57;border-radius:8px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;';
+
+      var box = document.createElement('span');
+      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:#2F6B57;font-size:12px;color:#fff;flex-shrink:0;';
+      box.textContent = '✓';
+
+      var lbl = document.createElement('span');
+      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#2F6B57;white-space:nowrap;';
+      lbl.textContent = 'Vybráno';
+
+      btn.appendChild(box);
+      btn.appendChild(lbl);
+      card.appendChild(btn);
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var sel = btn.getAttribute('data-sel') === 'true';
+        sel = !sel;
+        btn.setAttribute('data-sel', sel ? 'true' : 'false');
+        btn.style.borderColor = sel ? '#2F6B57' : '#D6D9CF';
+        box.style.background = sel ? '#2F6B57' : '#D6D9CF';
+        box.textContent = sel ? '✓' : '';
+        lbl.textContent = sel ? 'Vybráno' : 'Vynechat';
+        lbl.style.color = sel ? '#2F6B57' : '#9aa89f';
+        card.style.opacity = sel ? '1' : '0.45';
+      });
+    });
+
+    // Add to cart
+    function isOnShoptet() {
+      return typeof shoptet !== 'undefined' && typeof shoptet.config !== 'undefined';
+    }
+
+    function buildHelperUrl(items) {
+      var pairs = items
+        .filter(function (x) { return x.p && x.p.shoptetId; })
+        .map(function (x) { return x.p.shoptetId + '_' + x.p.shoptetPriceId; });
+      if (pairs.length === 0) return 'https://www.longelite.com/kosik/';
+      return 'https://www.longelite.com/kviz-kosik/?items=' + pairs.join(',');
+    }
+
+    var btnPrimary  = document.getElementById('lngShopPrimary');
+    var cartActions = document.getElementById('lngCartActions');
+
+    function showCartButton() {
+      while (cartActions.firstChild) cartActions.removeChild(cartActions.firstChild);
+      var viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'lng-btn lng-btn--cart-primary';
+      viewBtn.textContent = '✓ Přidáno – zobrazit košík';
+      viewBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        window.open('/kosik/', '_blank');
+      });
+      cartActions.appendChild(viewBtn);
+    }
+
+    function hideCartButton() {
+      if (btnPrimary) { btnPrimary.disabled = true; btnPrimary.textContent = 'Přidávám…'; }
+    }
+
+    function addItemsToCart(items) {
+      hideCartButton();
+      if (!isOnShoptet()) {
+        window.open(buildHelperUrl(items), '_blank');
+        showCartButton();
+        return;
+      }
+      var validItems = items.filter(function (x) { return x.p && x.p.shoptetId; });
+      if (validItems.length === 0) {
+        showCartButton();
+        return;
+      }
+      var i = 0;
+      function addNext() {
+        if (i >= validItems.length) {
+          showCartButton();
+          return;
+        }
+        var p = validItems[i].p;
+        i++;
+        fetch('/action/Cart/addCartItem/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'productId=' + p.shoptetId + '&priceId=' + p.shoptetPriceId + '&amount=1&language=cs'
+        }).catch(function () {}).then(addNext);
+      }
+      addNext();
+    }
+
+    var cartBusy = false;
+
+    if (btnPrimary) btnPrimary.addEventListener('click', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (cartBusy) return;
+      var selected = [];
+      app.querySelectorAll('.lng-product-check[data-sel="true"]').forEach(function (btn) {
+        selected.push({ p: { shoptetId: +btn.getAttribute('data-id'), shoptetPriceId: +btn.getAttribute('data-price') } });
+      });
+      if (selected.length === 0) return;
+      cartBusy = true;
+      addItemsToCart(selected);
+    });
+
+    // Image fallback
+    app.querySelectorAll('.lng-thumb').forEach(function (im) {
+      im.addEventListener('error', function () {
+        this.onerror = null;
+        var L = this.getAttribute('data-fb') || 'L';
+        this.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'>"
+          + "<rect width='80' height='80' rx='12' fill='#E3E7DD'/>"
+          + "<text x='50%' y='55%' font-family='Georgia,serif' font-size='34' fill='#2F6B57' "
+          + "text-anchor='middle' dominant-baseline='middle'>" + L + "</text></svg>");
+      });
+    });
+
+    document.getElementById('lngRestart').addEventListener('click', function () {
+      step = 0; answers = {}; gender = null; ageTag = null; budget = null;
+      progEl.innerHTML = '';
+      renderIntro();
+    });
+  }
+
+})();
+</script>
+</body>
+</html>
