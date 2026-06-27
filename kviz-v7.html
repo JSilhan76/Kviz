@@ -950,11 +950,11 @@
       q: 'Jaký je váš měsíční rozpočet na doplňky stravy?',
       sub: 'Přizpůsobíme počet doporučených produktů.',
       opts: [
-        { label: 'do 1 000 Kč',    budgetVal: 'low1',     maxProducts: 1 },
-        { label: '1 000–2 000 Kč', budgetVal: 'low2',     maxProducts: 2 },
-        { label: '2 000–4 000 Kč', budgetVal: 'mid',      maxProducts: 3 },
-        { label: '4 000–6 000 Kč', budgetVal: 'high',     maxProducts: 4 },
-        { label: 'Bez omezení',    budgetVal: 'unlimited', maxProducts: 99 }
+        { label: 'do 1 000 Kč',    budgetVal: 'low1',     maxProducts: 1, maxPrice: 1000 },
+        { label: '1 000–2 000 Kč', budgetVal: 'low2',     maxProducts: 2, maxPrice: 2000 },
+        { label: '2 000–4 000 Kč', budgetVal: 'mid',      maxProducts: 3, maxPrice: 4000 },
+        { label: '4 000–6 000 Kč', budgetVal: 'high',     maxProducts: 4, maxPrice: 6000 },
+        { label: 'Bez omezení',    budgetVal: 'unlimited', maxProducts: 99, maxPrice: 99999 }
       ]
     }
   ];
@@ -963,7 +963,8 @@
   var step = 0, answers = {}, total = QUESTIONS.length;
   var gender  = null;   // 'male' | 'female' — derived from Q1
   var ageTag  = null;   // 'age_under30' | 'age_30_39' | 'age_40_49' | 'age_50_59' | 'age_60_plus' — derived from Q0
-  var budget  = null;   // maxProducts number — derived from Q5
+  var budget   = null;   // maxProducts number — derived from Q5
+  var budgetMaxPrice = 99999; // maxPrice — derived from Q5
   var app     = document.getElementById('lngApp');
   var progEl  = document.getElementById('lngProg');
   var countEl = document.getElementById('lngCount');
@@ -974,7 +975,7 @@
   function renderIntro() {
     progEl.innerHTML = '';
     countEl.textContent = '';
-    step = 0; answers = {}; gender = null; ageTag = null; budget = null;
+    step = 0; answers = {}; gender = null; ageTag = null; budget = null; budgetMaxPrice = 99999;
     app.innerHTML = '<div class="lng-intro">'
       + '<span class="lng-intro-icon">🧬</span>'
       + '<h1>Najděte svůj osobní protokol</h1>'
@@ -1193,7 +1194,12 @@
       x.shoda = x.sc > 0 ? Math.max(45, Math.round(45 + (x.sc / maxSc) * 54)) : 45;
     });
 
-    // Budget limit
+    // Cenový filtr — odfiltruj produkty dražší než budget
+    if (budgetMaxPrice && budgetMaxPrice < 99999) {
+      out = out.filter(function(x) { return parsePrice(x.p.price) <= budgetMaxPrice; });
+    }
+
+    // Budget limit — počet produktů
     var maxP = budget || 3;
     out = out.slice(0, maxP);
 
@@ -1250,6 +1256,7 @@
     html += '</div></div>';
     app.innerHTML = html;
     updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     app.querySelectorAll('.lng-opt').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1260,7 +1267,7 @@
           // Derive state
           if (step === 0) { ageTag = opts[idx].ageTag || null; }
           if (step === 1) { gender = opts[idx].gVal   || null; }
-          if (step === 5) { budget = opts[idx].maxProducts || 3; }
+          if (step === 5) { budget = opts[idx].maxProducts || 3; budgetMaxPrice = opts[idx].maxPrice || 99999; }
           if (!lastQ) setTimeout(nextStep, 280);
           else renderQuestion();
         } else {
@@ -1421,10 +1428,23 @@
       + '<button type="button" class="lng-btn lng-btn--cart-primary" id="lngShopPrimary">🛒 Vložit vybrané do košíku</button>'
       + '</div>';
 
-    html += '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">← Začít znovu</button>'
+    html += '<div style="display:flex;gap:10px;justify-content:center;margin-top:18px;">'
+      + '<button type="button" class="lng-btn lng-btn--ghost" id="lngBackToQ">← Upravit odpovědi</button>'
+      + '<button type="button" class="lng-btn lng-btn--ghost lng-restart" id="lngRestart">Začít znovu</button>'
+      + '</div>'
       + '</div>';
 
     app.innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Back to last question
+    var backToQ = document.getElementById('lngBackToQ');
+    if (backToQ) {
+      backToQ.addEventListener('click', function() {
+        step = total - 1;
+        renderQuestion();
+      });
+    }
 
     // External supps toggle
     var extToggle = document.getElementById('lngExtToggle');
@@ -1572,7 +1592,7 @@
     });
 
     document.getElementById('lngRestart').addEventListener('click', function () {
-      step = 0; answers = {}; gender = null; ageTag = null; budget = null;
+      step = 0; answers = {}; gender = null; ageTag = null; budget = null; budgetMaxPrice = 99999;
       progEl.innerHTML = '';
       renderIntro();
     });
