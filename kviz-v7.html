@@ -1256,7 +1256,6 @@
     html += '</div></div>';
     app.innerHTML = html;
     updateProgress();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     app.querySelectorAll('.lng-opt').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1287,12 +1286,13 @@
   function nextStep() {
     var Q = QUESTIONS[step], sel = answers[step] || [];
     if (Q.type === 'single' && sel.length === 0) return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (step < total - 1) { step++; renderQuestion(); }
     else { step = total; renderResult(); }
   }
 
   function back() {
-    if (step > 0) { step--; renderQuestion(); }
+    if (step > 0) { step--; window.scrollTo({ top: 0, behavior: 'smooth' }); renderQuestion(); }
   }
 
   // ===== RENDER RESULTS =====
