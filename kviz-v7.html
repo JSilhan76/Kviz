@@ -1442,6 +1442,7 @@
     if (backToQ) {
       backToQ.addEventListener('click', function() {
         step = total - 1;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         renderQuestion();
       });
     }
