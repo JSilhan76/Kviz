@@ -1490,28 +1490,38 @@
       });
     }
 
-    // Inject toggle buttons into each product card
-    var allCards = app.querySelectorAll('.lng-card');
+    // Inject toggle buttons into each product card (primary + overBudget)
+    var allCards     = app.querySelectorAll('.lng-card');
+    var overBudgetItems = ranked._overBudget || [];
+    var cardProducts = primary.concat(overBudgetItems);
+    var primaryCount2 = primary.length;
+
     allCards.forEach(function (card, idx) {
-      var item = primary[idx];
+      var item = cardProducts[idx];
       if (!item) return;
       var p = item.p;
+
+      // overBudget produkty začínají odškrtnuté
+      var isOver  = idx >= primaryCount2;
+      var initSel = !isOver;
 
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'lng-product-check';
       btn.setAttribute('data-id', p.shoptetId);
       btn.setAttribute('data-price', p.shoptetPriceId);
-      btn.setAttribute('data-sel', 'true');
-      btn.style.cssText = 'align-self:center;flex-shrink:0;background:none;border:2px solid #2F6B57;border-radius:8px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;';
+      btn.setAttribute('data-sel', initSel ? 'true' : 'false');
+      btn.style.cssText = 'align-self:center;flex-shrink:0;background:none;border:2px solid ' + (initSel ? '#2F6B57' : '#D6D9CF') + ';border-radius:8px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;';
 
       var box = document.createElement('span');
-      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:#2F6B57;font-size:12px;color:#fff;flex-shrink:0;';
-      box.textContent = '✓';
+      box.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:' + (initSel ? '#2F6B57' : '#D6D9CF') + ';font-size:12px;color:#fff;flex-shrink:0;';
+      box.textContent = initSel ? '✓' : '';
 
       var lbl = document.createElement('span');
-      lbl.style.cssText = 'font-size:12px;font-weight:600;color:#2F6B57;white-space:nowrap;';
-      lbl.textContent = 'Vybráno';
+      lbl.style.cssText = 'font-size:12px;font-weight:600;color:' + (initSel ? '#2F6B57' : '#9aa89f') + ';white-space:nowrap;';
+      lbl.textContent = initSel ? 'Vybráno' : 'Přidat';
+
+      if (!initSel) card.style.opacity = '0.65';
 
       btn.appendChild(box);
       btn.appendChild(lbl);
@@ -1526,9 +1536,9 @@
         btn.style.borderColor = sel ? '#2F6B57' : '#D6D9CF';
         box.style.background = sel ? '#2F6B57' : '#D6D9CF';
         box.textContent = sel ? '✓' : '';
-        lbl.textContent = sel ? 'Vybráno' : 'Vynechat';
+        lbl.textContent = sel ? 'Vybráno' : 'Přidat';
         lbl.style.color = sel ? '#2F6B57' : '#9aa89f';
-        card.style.opacity = sel ? '1' : '0.45';
+        card.style.opacity = sel ? '1' : '0.65';
       });
     });
 
