@@ -1194,14 +1194,25 @@
       x.shoda = x.sc > 0 ? Math.max(45, Math.round(45 + (x.sc / maxSc) * 54)) : 45;
     });
 
-    // Cenový filtr — odfiltruj produkty dražší než budget
-    if (budgetMaxPrice && budgetMaxPrice < 99999) {
-      out = out.filter(function(x) { return parsePrice(x.p.price) <= budgetMaxPrice; });
-    }
+    // Greedy výběr: přidávej produkty dokud součet cen nepřesáhne budget
+    var maxP       = budget || 3;
+    var totalLimit = (budgetMaxPrice && budgetMaxPrice < 99999) ? budgetMaxPrice : Infinity;
+    var selected   = [];
+    var overBudget = [];
+    var spent      = 0;
 
-    // Budget limit — počet produktů
-    var maxP = budget || 3;
-    out = out.slice(0, maxP);
+    out.forEach(function(x) {
+      var price = parsePrice(x.p.price);
+      if (selected.length < maxP && spent + price <= totalLimit) {
+        selected.push(x);
+        spent += price;
+      } else {
+        overBudget.push(x);
+      }
+    });
+
+    out = selected;
+    out._overBudget = overBudget.slice(0, 3); // max 3 v sekci "doporučujeme"
 
     // External/coming-soon recommendations
     out._extSupps = getExternalRecs(s);
@@ -1371,6 +1382,17 @@
       html += '<p style="text-align:right;font-size:13px;font-weight:700;color:var(--ink);margin:4px 0 16px;">'
         + 'Doporučený nákup <span style="font-size:16px;">'
         + totalPrice.toLocaleString('cs-CZ') + ' Kč</span></p>';
+    }
+
+    // Produkty mimo rozpočet → sekce "Doporučujeme také"
+    var overBudget = ranked._overBudget || [];
+    if (overBudget.length > 0) {
+      html += '<div style="margin-top:24px;border-top:2px solid var(--line);padding-top:16px;">'
+        + '<p class="lng-eyebrow" style="margin-bottom:6px;">Doporučujeme také</p>'
+        + '<p style="font-size:13px;color:var(--ink-soft);margin:0 0 14px;">Tyto produkty přesahují váš aktuální rozpočet, ale hodí se k vašemu profilu.</p>'
+        + '<div class="lng-cards">';
+      overBudget.forEach(function(x) { html += cardHtml(x, 0, false); });
+      html += '</div></div>';
     }
 
     // Bundle – zobrazit pokud budget === 99 (unlimited) nebo age 50+
